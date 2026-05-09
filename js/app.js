@@ -28,7 +28,7 @@ async function carregarProdutos() {
                     R$ ${produto.preco}
                 </p>
 
-                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco})">
+                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco}, '${produto.categoria}')">
 
                     Adicionar
 
@@ -86,8 +86,35 @@ function atualizarCarrinho() {
         `;
     });
 
+    let temAguaOuGas = carrinho.some(produto => {
+        return produto.categoria && produto.categoria.trim() === "AguaGas";
+    });
+
+    let entrega = document.getElementById("entrega")?.value;
+
+    let taxaEntrega = 0;
+
+    if (entrega === "Entrega") {
+
+        if (temAguaOuGas) {
+            taxaEntrega = 0;
+        } else if (total < 50) {
+            taxaEntrega = 3;
+        }
+    }
+
+    let totalFinal = total + taxaEntrega;
+
     totalElemento.innerHTML = `
-        Total: R$ ${total.toFixed(2)}
+        Subtotal: R$ ${total.toFixed(2)}
+    `;
+
+    document.getElementById("taxa-entrega").innerHTML = `
+        Taxa de entrega: R$ ${taxaEntrega.toFixed(2)}
+    `;
+
+    document.getElementById("total-final").innerHTML = `
+        Total final: R$ ${totalFinal.toFixed(2)}
     `;
 }
 

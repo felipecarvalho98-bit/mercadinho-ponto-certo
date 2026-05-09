@@ -109,6 +109,14 @@
                     Total: R$ 0,00
                 </h3>
 
+                <p id="taxa-entrega">
+                    Taxa de entrega: R$ 0,00
+                </p>
+
+                <h3 id="total-final">
+                    Total final: R$ 0,00
+                </h3>
+
                 </section>
             <section class="cliente">
 
@@ -127,7 +135,7 @@
                     <option>Cartão</option>
                 </select>
 
-                <select id="entrega">
+                <select id="entrega" onchange="atualizarCarrinho()">
                     <option value="">Entrega ou retirada</option>
                     <option>Entrega</option>
                     <option>Retirada</option>
