@@ -669,3 +669,22 @@ button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.controle-quantidade {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.controle-quantidade button {
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.controle-quantidade span {
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}

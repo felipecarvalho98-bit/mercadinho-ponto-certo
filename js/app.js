@@ -52,11 +52,23 @@ carregarProdutos();
 
 function adicionarCarrinho(nome, preco, categoria) {
 
-    carrinho.push({
-        nome,
-        preco,
-        categoria
+    const produtoExistente = carrinho.find(produto => {
+        return produto.nome === nome;
     });
+
+    if (produtoExistente) {
+
+        produtoExistente.quantidade++;
+
+    } else {
+
+        carrinho.push({
+            nome,
+            preco,
+            categoria,
+            quantidade: 1
+        });
+    }
 
     atualizarCarrinho();
 
@@ -73,16 +85,43 @@ function atualizarCarrinho() {
 
     let total = 0;
 
-    document.getElementById("contadorCarrinho").innerText = carrinho.length;
+    let totalItens = 0;
 
     carrinho.forEach((produto, index) => {
 
-        total += produto.preco;
+        const subtotalProduto = produto.preco * produto.quantidade;
+
+        total += subtotalProduto;
+
+        totalItens += produto.quantidade;
 
         lista.innerHTML += `
         
             <li>
-                ${produto.nome} - R$ ${produto.preco.toFixed(2)}
+                <div>
+                    <strong>${produto.nome}</strong><br>
+                    R$ ${produto.preco.toFixed(2)} cada
+                </div>
+
+                <div class="controle-quantidade">
+
+                    <button onclick="diminuirQuantidade(${index})">
+                        -
+                    </button>
+
+                    <span>
+                        ${produto.quantidade}
+                    </span>
+
+                    <button onclick="aumentarQuantidade(${index})">
+                        +
+                    </button>
+
+                </div>
+
+                <div>
+                    R$ ${subtotalProduto.toFixed(2)}
+                </div>
 
                 <button onclick="removerItem(${index})">
                     X
@@ -91,6 +130,8 @@ function atualizarCarrinho() {
 
         `;
     });
+
+    document.getElementById("contadorCarrinho").innerText = totalItens;
 
     const valoresEntrega = calcularValoresEntrega(total);
 
@@ -144,6 +185,27 @@ function removerItem(index) {
     atualizarCarrinho();
 }
 
+function aumentarQuantidade(index) {
+
+    carrinho[index].quantidade++;
+
+    atualizarCarrinho();
+}
+
+function diminuirQuantidade(index) {
+
+    if (carrinho[index].quantidade > 1) {
+
+        carrinho[index].quantidade--;
+
+    } else {
+
+        carrinho.splice(index, 1);
+    }
+
+    atualizarCarrinho();
+}
+
 function finalizarPedido() {
 
     const nome = document.getElementById("nome").value;
@@ -170,7 +232,7 @@ function finalizarPedido() {
 
     carrinho.forEach(produto => {
 
-        subtotal += produto.preco;
+        subtotal += produto.preco * produto.quantidade;
     });
 
     const valoresEntrega = calcularValoresEntrega(subtotal);
@@ -180,7 +242,11 @@ function finalizarPedido() {
     const totalFinal = valoresEntrega.totalFinal;
 
     const pedidoTexto = carrinho.map(produto => {
-        return `${produto.nome} - R$ ${produto.preco.toFixed(2)}`;
+
+        const subtotalProduto = produto.preco * produto.quantidade;
+
+        return `${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}`;
+        
     }).join(", ");
 
     let mensagem = `NOVO PEDIDO%0A%0A`;
@@ -194,8 +260,9 @@ function finalizarPedido() {
     mensagem += `ITENS DO PEDIDO:%0A`;
 
     carrinho.forEach(produto => {
+        const subtotalProduto = produto.preco * produto.quantidade;
 
-        mensagem += `- ${produto.nome} - R$ ${produto.preco.toFixed(2)}%0A`;
+        mensagem += `- ${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}%0A`;
     });
 
     mensagem += `%0ASubtotal: R$ ${subtotal.toFixed(2)}`;
@@ -230,9 +297,11 @@ function mostrarConfirmacaoPedido() {
 
     carrinho.forEach(produto => {
 
+        const subtotalProduto = produto.preco * produto.quantidade;
+
         itensHtml += `
             <p>
-                ${produto.nome} - R$ ${produto.preco.toFixed(2)}
+                ${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}
             </p>
         `;
     });
@@ -449,12 +518,14 @@ function atualizarModalCarrinho() {
 
     carrinho.forEach(produto => {
 
+        const subtotalProduto = produto.preco * produto.quantidade;
+
         total += produto.preco;
 
         lista.innerHTML += `
 
             <li>
-                ${produto.nome} - R$ ${produto.preco.toFixed(2)}
+                ${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}
             </li>
 
         `;
