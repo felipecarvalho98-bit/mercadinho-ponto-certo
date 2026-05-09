@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mercadinho Ponto Certo</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+
+        <div class="logo-area">
+
+            <img src="imagens/logo.png" alt="Logo">
+
+            <div>
+                <h1>Mercadinho Ponto Certo</h1>
+                <p>Sua mercearia online</p>
+            </div>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <h2 class="titulo-produtos">Produtos</h2>
+
+        <section class="produtos">
+
+            <div class="produto-card">
+
+                <img src="imagens/arroz.png" alt="Arroz">
+
+                <h2>Arroz 5kg</h2>
+
+                <p class="preco">R$ 24,90</p>
+
+                <button onclick="adicionarCarrinho('Arroz 5kg', 24.90)">
+                    Adicionar
+                </button>
+
+            </div>
+
+            <div class="produto-card">
+
+                <img src="imagens/feijao.png" alt="Feijão">
+
+                <h2>Feijão</h2>
+
+                <p class="preco">R$ 8,99</p>
+
+            <button onclick="adicionarCarrinho('Feijão', 8.99)">
+                Adicionar
+            </button>
+
+            </div>
+
+            <div class="produto-card">
+
+                <img src="imagens/macarrao.png" alt="Macarrão">
+
+                <h2>Macarrão</h2>
+
+                <p class="preco">R$ 5,49</p>
+
+                <button onclick="adicionarCarrinho('Macarrão', 5.49)">
+                    Adicionar
+                </button>
+
+                    </div>
+
+                </section>
+
+            <section class="carrinho">
+
+                <h2>Carrinho</h2>
+
+                <ul id="lista-carrinho"></ul>
+
+                <h3 id="total">
+                    Total: R$ 0,00
+                </h3>
+
+                </section>
+            <section class="cliente">
+
+                <h2>Dados do Cliente</h2>
+
+                <input type="text" id="nome" placeholder="Seu nome">
+
+                <input type="text" id="telefone" placeholder="Telefone">
+
+                <input type="text" id="endereco" placeholder="Endereço">
+
+                <select id="pagamento">
+                    <option value="">Forma de pagamento</option>
+                    <option>Pix</option>
+                    <option>Dinheiro</option>
+                    <option>Cartão</option>
+                </select>
+
+                <select id="entrega">
+                    <option value="">Entrega ou retirada</option>
+                    <option>Entrega</option>
+                    <option>Retirada</option>
+                </select>
+
+                <button onclick="finalizarPedido()">
+                    Finalizar Pedido
+                </button>
+
+            </section>
+    </main>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>

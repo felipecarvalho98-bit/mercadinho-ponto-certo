@@ -1,0 +1,175 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #0047b3;
+    padding: 20px;
+    color: white;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-area img {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+}
+
+.logo-area h1 {
+    font-size: 32px;
+}
+
+.logo-area p {
+    margin-top: 5px;
+}
+
+.titulo-produtos {
+    margin: 30px;
+    font-size: 28px;
+    color: #333;
+}
+
+.produtos {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.produto-card {
+    background-color: white;
+    width: 250px;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+    transition: 0.3s;
+}
+
+.produto-card:hover {
+    transform: scale(1.03);
+}
+
+.produto-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+}
+
+.produto-card h2 {
+    margin-top: 10px;
+    color: #333;
+}
+
+.preco {
+    color: #008000;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border: none;
+    background-color: #ffcc00;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #ffb300;
+}
+.carrinho {
+
+    background: white;
+
+    margin: 20px;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.carrinho h2 {
+
+    margin-bottom: 15px;
+}
+
+.carrinho ul {
+
+    list-style: none;
+}
+
+.carrinho li {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+
+    padding: 10px;
+
+    background: #f5f5f5;
+
+    border-radius: 8px;
+}
+
+.carrinho button {
+
+    width: 40px;
+
+    background: red;
+
+    color: white;
+}
+.cliente {
+
+    background: white;
+
+    margin: 20px;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.cliente input,
+.cliente select {
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    border: 1px solid #ccc;
+
+    font-size: 16px;
+}

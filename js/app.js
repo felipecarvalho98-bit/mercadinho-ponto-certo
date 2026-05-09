@@ -1,0 +1,131 @@
+let carrinho = [];
+
+function adicionarCarrinho(nome, preco) {
+
+    carrinho.push({
+        nome,
+        preco
+    });
+
+    atualizarCarrinho();
+}
+
+function atualizarCarrinho() {
+
+    const lista = document.getElementById("lista-carrinho");
+
+    const totalElemento = document.getElementById("total");
+
+    lista.innerHTML = "";
+
+    let total = 0;
+
+    carrinho.forEach((produto, index) => {
+
+        total += produto.preco;
+
+        lista.innerHTML += `
+        
+            <li>
+                ${produto.nome} - R$ ${produto.preco.toFixed(2)}
+
+                <button onclick="removerItem(${index})">
+                    X
+                </button>
+            </li>
+
+        `;
+    });
+
+    totalElemento.innerHTML = `
+        Total: R$ ${total.toFixed(2)}
+    `;
+}
+
+function removerItem(index) {
+
+    carrinho.splice(index, 1);
+
+    atualizarCarrinho();
+}
+function finalizarPedido() {
+
+    const nome = document.getElementById("nome").value;
+
+    const telefone = document.getElementById("telefone").value;
+
+    const endereco = document.getElementById("endereco").value;
+
+    const pagamento = document.getElementById("pagamento").value;
+
+    const entrega = document.getElementById("entrega").value;
+
+    if(carrinho.length === 0) {
+
+        alert("Carrinho vazio!");
+
+        return;
+    }
+
+    let mensagem = `NOVO PEDIDO%0A%0A`;
+
+    mensagem += `Nome: ${nome}%0A`;
+
+    mensagem += `Telefone: ${telefone}%0A`;
+
+    mensagem += `Endereço: ${endereco}%0A`;
+
+    mensagem += `Pagamento: ${pagamento}%0A`;
+
+    mensagem += `Tipo: ${entrega}%0A%0A`;
+
+    mensagem += `ITENS DO PEDIDO:%0A`;
+
+    let total = 0;
+
+    carrinho.forEach(produto => {
+
+        mensagem += `- ${produto.nome} - R$ ${produto.preco.toFixed(2)}%0A`;
+
+        total += produto.preco;
+    });
+
+    mensagem += `%0ATotal: R$ ${total.toFixed(2)}`;
+
+    const numero = "5585986625097";
+
+    const pedidoTexto = carrinho.map(produto => {
+    return `${produto.nome} - R$ ${produto.preco.toFixed(2)}`;
+}).join(", ");
+
+fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec", {
+
+    method: "POST",
+
+    body: JSON.stringify({
+
+        nome: nome,
+
+        telefone: telefone,
+
+        endereco: endereco,
+
+        pagamento: pagamento,
+
+        entrega: entrega,
+
+        pedido: pedidoTexto,
+
+        total: total.toFixed(2)
+
+    })
+
+})
+.then(res => res.text())
+.then(resposta => {
+
+    console.log(resposta);
+
+    window.open(`https://wa.me/${numero}?text=${mensagem}`);
+});
+}
