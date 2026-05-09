@@ -1,6 +1,7 @@
 let produtosGlobais = [];
 let carrinho = [];
 let dadosPedidoFinal = null;
+let pedidoEnviando = false;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec";
 
@@ -304,6 +305,21 @@ function fecharConfirmacao() {
 
 function confirmarEnvioPedido() {
 
+    if (pedidoEnviando) {
+        return;
+    }
+
+    pedidoEnviando = true;
+
+    const botaoConfirmar = document.querySelector(
+        ".botoes-confirmacao button"
+    );
+
+    if (botaoConfirmar) {
+        botaoConfirmar.disabled = true;
+        botaoConfirmar.innerText = "Enviando...";
+    }
+
     fetch(API_URL, {
 
         method: "POST",
@@ -339,6 +355,26 @@ function confirmarEnvioPedido() {
         fecharConfirmacao();
 
         limparPedidoAposEnvio();
+
+        pedidoEnviando = false;
+
+        if (botaoConfirmar) {
+            botaoConfirmar.disabled = false;
+            botaoConfirmar.innerText = "Confirmar";
+        }
+    })
+    .catch(erro => {
+
+        console.error("Erro ao enviar pedido:", erro);
+
+        alert("Erro ao enviar pedido. Tente novamente.");
+
+        pedidoEnviando = false;
+
+        if (botaoConfirmar) {
+            botaoConfirmar.disabled = false;
+            botaoConfirmar.innerText = "Confirmar";
+        }
     });
 }
 
