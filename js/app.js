@@ -44,11 +44,12 @@ carregarProdutos();
 
 let carrinho = [];
 
-function adicionarCarrinho(nome, preco) {
+function adicionarCarrinho(nome, preco, categoria) {
 
     carrinho.push({
         nome,
-        preco
+        preco,
+        categoria
     });
 
     atualizarCarrinho();
@@ -131,14 +132,39 @@ function finalizarPedido() {
 
     let total = 0;
 
+    let temAguaOuGas = false;
+
     carrinho.forEach(produto => {
 
         mensagem += `- ${produto.nome} - R$ ${produto.preco.toFixed(2)}%0A`;
 
         total += produto.preco;
+
+        if (produto.categoria === "AguaGas") {
+
+            temAguaOuGas = true;
+        }
     });
 
-    mensagem += `%0ATotal: R$ ${total.toFixed(2)}`;
+    let taxaEntrega = 0;
+
+if (entrega === "Entrega") {
+
+    if (temAguaOuGas) {
+
+        taxaEntrega = 0;
+
+    } else if (total < 50) {
+
+        taxaEntrega = 3;
+    }
+}
+
+let totalFinal = total + taxaEntrega;
+
+    mensagem += `%0ATaxa de entrega: R$ ${taxaEntrega.toFixed(2)}`;
+
+    mensagem += `%0ATotal: R$ ${totalFinal.toFixed(2)}`;
 
     const numero = "5585986625097";
 
@@ -164,7 +190,7 @@ fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3
 
         pedido: pedidoTexto,
 
-        total: total.toFixed(2)
+        total: totalFinal.toFixed(2)
 
     })
 
@@ -208,7 +234,7 @@ function filtrarProdutos() {
                     R$ ${produto.preco}
                 </p>
 
-                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco})">
+                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco}, '${produto.categoria}')">
 
                     Adicionar
 
@@ -250,7 +276,7 @@ function filtrarCategoria(categoria) {
                     R$ ${produto.preco}
                 </p>
 
-                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco})">
+                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco}, '${produto.categoria}')">
 
                     Adicionar
 
