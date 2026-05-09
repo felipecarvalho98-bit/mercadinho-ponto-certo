@@ -306,3 +306,77 @@ th {
 
     border-color: #0047b3;
 }
+
+.banner {
+
+    width: 100%;
+
+    min-height: 300px;
+
+    background: linear-gradient(135deg, #0047b3, #0066ff);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 40px 20px;
+
+    color: white;
+}
+
+.banner-texto {
+
+    text-align: center;
+
+    max-width: 700px;
+}
+
+.banner-texto h2 {
+
+    font-size: 48px;
+
+    margin-bottom: 20px;
+}
+
+.banner-texto p {
+
+    font-size: 22px;
+
+    margin-bottom: 30px;
+}
+
+.banner-texto button {
+
+    max-width: 250px;
+
+    margin: auto;
+
+    background: #ffcc00;
+
+    color: #333;
+}
+
+.banner-texto button:hover {
+
+    background: #ffb300;
+}
+
+@media (max-width: 768px) {
+
+    .banner {
+
+        min-height: 250px;
+    }
+
+    .banner-texto h2 {
+
+        font-size: 32px;
+    }
+
+    .banner-texto p {
+
+        font-size: 18px;
+    }
+}
