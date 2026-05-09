@@ -38,7 +38,7 @@ function renderizarProdutos(produtos) {
                     R$ ${Number(produto.preco).toFixed(2)}
                 </p>
 
-                <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}')">
+                <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)})">
                     Adicionar
                 </button>
 
@@ -50,7 +50,7 @@ function renderizarProdutos(produtos) {
 
 carregarProdutos();
 
-function adicionarCarrinho(nome, preco, categoria) {
+function adicionarCarrinho(nome, preco, categoria, estoque) {
 
     const produtoExistente = carrinho.find(produto => {
         return produto.nome === nome;
@@ -58,14 +58,25 @@ function adicionarCarrinho(nome, preco, categoria) {
 
     if (produtoExistente) {
 
+        if (produtoExistente.quantidade >= produtoExistente.estoque) {
+            alert("Estoque insuficiente para este produto!");
+            return;
+        }
+
         produtoExistente.quantidade++;
 
     } else {
+
+        if (estoque <= 0) {
+            alert("Produto sem estoque!");
+            return;
+        }
 
         carrinho.push({
             nome,
             preco,
             categoria,
+            estoque,
             quantidade: 1
         });
     }
@@ -186,6 +197,11 @@ function removerItem(index) {
 }
 
 function aumentarQuantidade(index) {
+
+    if (carrinho[index].quantidade >= carrinho[index].estoque) {
+        alert("Estoque insuficiente para este produto!");
+        return;
+    }
 
     carrinho[index].quantidade++;
 
