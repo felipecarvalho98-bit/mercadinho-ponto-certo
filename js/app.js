@@ -1,14 +1,23 @@
 let produtosGlobais = [];
+let carrinho = [];
+let dadosPedidoFinal = null;
+
+const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec";
+
+const NUMERO_WHATSAPP = "558598439003";
 
 async function carregarProdutos() {
 
-    const resposta = await fetch(
-        "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec"
-    );
+    const resposta = await fetch(API_URL);
 
     const produtos = await resposta.json();
 
     produtosGlobais = produtos;
+
+    renderizarProdutos(produtos);
+}
+
+function renderizarProdutos(produtos) {
 
     const areaProdutos = document.getElementById("produtos");
 
@@ -25,13 +34,11 @@ async function carregarProdutos() {
                 <h2>${produto.nome}</h2>
 
                 <p class="preco">
-                    R$ ${produto.preco}
+                    R$ ${Number(produto.preco).toFixed(2)}
                 </p>
 
-                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco}, '${produto.categoria}')">
-
+                <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}')">
                     Adicionar
-
                 </button>
 
             </div>
@@ -41,8 +48,6 @@ async function carregarProdutos() {
 }
 
 carregarProdutos();
-
-let carrinho = [];
 
 function adicionarCarrinho(nome, preco, categoria) {
 
@@ -86,36 +91,49 @@ function atualizarCarrinho() {
         `;
     });
 
-    let temAguaOuGas = carrinho.some(produto => {
-        return produto.categoria && produto.categoria.trim() === "AguaGas";
-    });
-
-    let entrega = document.getElementById("entrega")?.value;
-
-    let taxaEntrega = 0;
-
-    if (entrega === "Entrega") {
-
-        if (temAguaOuGas) {
-            taxaEntrega = 0;
-        } else if (total < 50) {
-            taxaEntrega = 3;
-        }
-    }
-
-    let totalFinal = total + taxaEntrega;
+    const valoresEntrega = calcularValoresEntrega(total);
 
     totalElemento.innerHTML = `
         Subtotal: R$ ${total.toFixed(2)}
     `;
 
     document.getElementById("taxa-entrega").innerHTML = `
-        Taxa de entrega: R$ ${taxaEntrega.toFixed(2)}
+        Taxa de entrega: R$ ${valoresEntrega.taxaEntrega.toFixed(2)}
     `;
 
     document.getElementById("total-final").innerHTML = `
-        Total final: R$ ${totalFinal.toFixed(2)}
+        Total final: R$ ${valoresEntrega.totalFinal.toFixed(2)}
     `;
+}
+
+function calcularValoresEntrega(subtotal) {
+
+    const entrega = document.getElementById("entrega")?.value;
+
+    const temAguaOuGas = carrinho.some(produto => {
+        return produto.categoria && produto.categoria.trim() === "AguaGas";
+    });
+
+    let taxaEntrega = 0;
+
+    if (entrega === "Entrega") {
+
+        if (temAguaOuGas) {
+
+            taxaEntrega = 0;
+
+        } else if (subtotal < 50) {
+
+            taxaEntrega = 3;
+        }
+    }
+
+    const totalFinal = subtotal + taxaEntrega;
+
+    return {
+        taxaEntrega,
+        totalFinal
+    };
 }
 
 function removerItem(index) {
@@ -124,111 +142,219 @@ function removerItem(index) {
 
     atualizarCarrinho();
 }
+
 function finalizarPedido() {
 
     const nome = document.getElementById("nome").value;
-
     const telefone = document.getElementById("telefone").value;
-
     const endereco = document.getElementById("endereco").value;
-
     const pagamento = document.getElementById("pagamento").value;
-
     const entrega = document.getElementById("entrega").value;
 
-    if(carrinho.length === 0) {
+    if (carrinho.length === 0) {
 
         alert("Carrinho vazio!");
 
         return;
     }
 
+    if (!nome || !telefone || !endereco || !pagamento || !entrega) {
+
+        alert("Preencha todos os dados do cliente!");
+
+        return;
+    }
+
+    let subtotal = 0;
+
+    carrinho.forEach(produto => {
+
+        subtotal += produto.preco;
+    });
+
+    const valoresEntrega = calcularValoresEntrega(subtotal);
+
+    const taxaEntrega = valoresEntrega.taxaEntrega;
+
+    const totalFinal = valoresEntrega.totalFinal;
+
+    const pedidoTexto = carrinho.map(produto => {
+        return `${produto.nome} - R$ ${produto.preco.toFixed(2)}`;
+    }).join(", ");
+
     let mensagem = `NOVO PEDIDO%0A%0A`;
 
     mensagem += `Nome: ${nome}%0A`;
-
     mensagem += `Telefone: ${telefone}%0A`;
-
     mensagem += `Endereço: ${endereco}%0A`;
-
     mensagem += `Pagamento: ${pagamento}%0A`;
-
     mensagem += `Tipo: ${entrega}%0A%0A`;
 
     mensagem += `ITENS DO PEDIDO:%0A`;
 
-    let total = 0;
-
-    let temAguaOuGas = false;
-
     carrinho.forEach(produto => {
 
         mensagem += `- ${produto.nome} - R$ ${produto.preco.toFixed(2)}%0A`;
-
-        total += produto.preco;
-
-        if (produto.categoria === "AguaGas") {
-
-            temAguaOuGas = true;
-        }
     });
 
-    let taxaEntrega = 0;
-
-if (entrega === "Entrega") {
-
-    if (temAguaOuGas) {
-
-        taxaEntrega = 0;
-
-    } else if (total < 50) {
-
-        taxaEntrega = 3;
-    }
-}
-
-let totalFinal = total + taxaEntrega;
-
+    mensagem += `%0ASubtotal: R$ ${subtotal.toFixed(2)}`;
     mensagem += `%0ATaxa de entrega: R$ ${taxaEntrega.toFixed(2)}`;
-
     mensagem += `%0ATotal: R$ ${totalFinal.toFixed(2)}`;
 
-    const numero = "5585986625097";
+    dadosPedidoFinal = {
+        nome,
+        telefone,
+        endereco,
+        pagamento,
+        entrega,
+        pedidoTexto,
+        subtotal,
+        taxaEntrega,
+        totalFinal,
+        mensagem
+    };
 
-    const pedidoTexto = carrinho.map(produto => {
-    return `${produto.nome} - R$ ${produto.preco.toFixed(2)}`;
-}).join(", ");
+    mostrarConfirmacaoPedido();
+}
 
-fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec", {
+function mostrarConfirmacaoPedido() {
 
-    method: "POST",
+    console.log("Modal de confirmação chamado");
 
-    body: JSON.stringify({
+    criarModalConfirmacaoSeNaoExistir();
 
-        nome: nome,
+    const resumo = document.getElementById("resumoPedido");
 
-        telefone: telefone,
+    let itensHtml = "";
 
-        endereco: endereco,
+    carrinho.forEach(produto => {
 
-        pagamento: pagamento,
+        itensHtml += `
+            <p>
+                ${produto.nome} - R$ ${produto.preco.toFixed(2)}
+            </p>
+        `;
+    });
 
-        entrega: entrega,
+    resumo.innerHTML = `
+        <p><strong>Cliente:</strong> ${dadosPedidoFinal.nome}</p>
+        <p><strong>Telefone:</strong> ${dadosPedidoFinal.telefone}</p>
+        <p><strong>Endereço:</strong> ${dadosPedidoFinal.endereco}</p>
+        <p><strong>Pagamento:</strong> ${dadosPedidoFinal.pagamento}</p>
+        <p><strong>Tipo:</strong> ${dadosPedidoFinal.entrega}</p>
 
-        pedido: pedidoTexto,
+        <hr>
 
-        total: totalFinal.toFixed(2)
+        <strong>Itens:</strong>
+        ${itensHtml}
+
+        <hr>
+
+        <p><strong>Subtotal:</strong> R$ ${dadosPedidoFinal.subtotal.toFixed(2)}</p>
+        <p><strong>Taxa de entrega:</strong> R$ ${dadosPedidoFinal.taxaEntrega.toFixed(2)}</p>
+        <p><strong>Total:</strong> R$ ${dadosPedidoFinal.totalFinal.toFixed(2)}</p>
+    `;
+
+    document.getElementById("modalConfirmacao").style.display = "flex";
+}
+
+function criarModalConfirmacaoSeNaoExistir() {
+
+    const modalExiste = document.getElementById("modalConfirmacao");
+
+    if (modalExiste) {
+        return;
+    }
+
+    const modal = document.createElement("div");
+
+    modal.id = "modalConfirmacao";
+
+    modal.className = "modal-confirmacao";
+
+    modal.innerHTML = `
+        <div class="confirmacao-box">
+
+            <h2>Confirmar Pedido</h2>
+
+            <div id="resumoPedido"></div>
+
+            <div class="botoes-confirmacao">
+
+                <button onclick="confirmarEnvioPedido()">
+                    Confirmar
+                </button>
+
+                <button onclick="fecharConfirmacao()" class="btn-cancelar">
+                    Cancelar
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+function fecharConfirmacao() {
+
+    document.getElementById("modalConfirmacao").style.display = "none";
+}
+
+function confirmarEnvioPedido() {
+
+    fetch(API_URL, {
+
+        method: "POST",
+
+        body: JSON.stringify({
+
+            tipo: "pedido",
+
+            nome: dadosPedidoFinal.nome,
+
+            telefone: dadosPedidoFinal.telefone,
+
+            endereco: dadosPedidoFinal.endereco,
+
+            pagamento: dadosPedidoFinal.pagamento,
+
+            entrega: dadosPedidoFinal.entrega,
+
+            pedido: dadosPedidoFinal.pedidoTexto,
+
+            total: dadosPedidoFinal.totalFinal.toFixed(2)
+
+        })
 
     })
+    .then(res => res.text())
+    .then(resposta => {
 
-})
-.then(res => res.text())
-.then(resposta => {
+        console.log(resposta);
 
-    console.log(resposta);
+        window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${dadosPedidoFinal.mensagem}`);
 
-    window.open(`https://wa.me/${numero}?text=${mensagem}`);
-});
+        fecharConfirmacao();
+
+        limparPedidoAposEnvio();
+    });
+}
+
+function limparPedidoAposEnvio() {
+
+    carrinho = [];
+
+    atualizarCarrinho();
+
+    document.getElementById("nome").value = "";
+    document.getElementById("telefone").value = "";
+    document.getElementById("endereco").value = "";
+    document.getElementById("pagamento").value = "";
+    document.getElementById("entrega").value = "";
+
+    dadosPedidoFinal = null;
 }
 
 function filtrarProdutos() {
@@ -238,46 +364,15 @@ function filtrarProdutos() {
         .value
         .toLowerCase();
 
-    const areaProdutos = document.getElementById("produtos");
-
-    areaProdutos.innerHTML = "";
-
     const produtosFiltrados = produtosGlobais.filter(produto => {
 
         return produto.nome.toLowerCase().includes(busca);
     });
 
-    produtosFiltrados.forEach(produto => {
-
-        areaProdutos.innerHTML += `
-
-            <div class="produto-card">
-
-                <img src="${produto.imagem}" alt="${produto.nome}">
-
-                <h2>${produto.nome}</h2>
-
-                <p class="preco">
-                    R$ ${produto.preco}
-                </p>
-
-                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco}, '${produto.categoria}')">
-
-                    Adicionar
-
-                </button>
-
-            </div>
-
-        `;
-    });
+    renderizarProdutos(produtosFiltrados);
 }
 
 function filtrarCategoria(categoria) {
-
-    const areaProdutos = document.getElementById("produtos");
-
-    areaProdutos.innerHTML = "";
 
     let produtosFiltrados = produtosGlobais;
 
@@ -289,30 +384,7 @@ function filtrarCategoria(categoria) {
         });
     }
 
-    produtosFiltrados.forEach(produto => {
-
-        areaProdutos.innerHTML += `
-
-            <div class="produto-card">
-
-                <img src="${produto.imagem}" alt="${produto.nome}">
-
-                <h2>${produto.nome}</h2>
-
-                <p class="preco">
-                    R$ ${produto.preco}
-                </p>
-
-                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco}, '${produto.categoria}')">
-
-                    Adicionar
-
-                </button>
-
-            </div>
-
-        `;
-    });
+    renderizarProdutos(produtosFiltrados);
 }
 
 function abrirCarrinho() {
@@ -331,13 +403,9 @@ function fecharCarrinho() {
 
 function atualizarModalCarrinho() {
 
-    const lista = document.getElementById(
-        "lista-carrinho-modal"
-    );
+    const lista = document.getElementById("lista-carrinho-modal");
 
-    const totalModal = document.getElementById(
-        "total-modal"
-    );
+    const totalModal = document.getElementById("total-modal");
 
     lista.innerHTML = "";
 
@@ -350,31 +418,44 @@ function atualizarModalCarrinho() {
         lista.innerHTML += `
 
             <li>
-
                 ${produto.nome} - R$ ${produto.preco.toFixed(2)}
-
             </li>
 
         `;
     });
 
+    const valoresEntrega = calcularValoresEntrega(total);
+
     totalModal.innerHTML = `
-        Total: R$ ${total.toFixed(2)}
+        Subtotal: R$ ${total.toFixed(2)}<br>
+        Taxa de entrega: R$ ${valoresEntrega.taxaEntrega.toFixed(2)}<br>
+        Total: R$ ${valoresEntrega.totalFinal.toFixed(2)}
     `;
 }
 
 function mostrarToast() {
+
     const toast = document.getElementById("toast");
 
     toast.classList.add("mostrar");
 
     setTimeout(() => {
+
         toast.classList.remove("mostrar");
+
     }, 2000);
 }
 
 window.addEventListener("load", () => {
-    setTimeout(() => {
-        document.getElementById("loading").style.display = "none";
-    }, 1200);
+
+    const loading = document.getElementById("loading");
+
+    if (loading) {
+
+        setTimeout(() => {
+
+            loading.style.display = "none";
+
+        }, 1200);
+    }
 });
