@@ -1,3 +1,5 @@
+let produtosGlobais = [];
+
 async function carregarProdutos() {
 
     const resposta = await fetch(
@@ -5,6 +7,8 @@ async function carregarProdutos() {
     );
 
     const produtos = await resposta.json();
+
+    produtosGlobais = produtos;
 
     const areaProdutos = document.getElementById("produtos");
 
@@ -168,4 +172,46 @@ fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3
 
     window.open(`https://wa.me/${numero}?text=${mensagem}`);
 });
+}
+
+function filtrarProdutos() {
+
+    const busca = document
+        .getElementById("campoBusca")
+        .value
+        .toLowerCase();
+
+    const areaProdutos = document.getElementById("produtos");
+
+    areaProdutos.innerHTML = "";
+
+    const produtosFiltrados = produtosGlobais.filter(produto => {
+
+        return produto.nome.toLowerCase().includes(busca);
+    });
+
+    produtosFiltrados.forEach(produto => {
+
+        areaProdutos.innerHTML += `
+
+            <div class="produto-card">
+
+                <img src="${produto.imagem}" alt="${produto.nome}">
+
+                <h2>${produto.nome}</h2>
+
+                <p class="preco">
+                    R$ ${produto.preco}
+                </p>
+
+                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco})">
+
+                    Adicionar
+
+                </button>
+
+            </div>
+
+        `;
+    });
 }

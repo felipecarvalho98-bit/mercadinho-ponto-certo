@@ -284,3 +284,25 @@ th {
         overflow-x: auto;
     }
 }
+
+.campo-busca {
+
+    width: calc(100% - 40px);
+
+    margin: 0 20px 20px 20px;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    border: 1px solid #ccc;
+
+    font-size: 18px;
+
+    outline: none;
+}
+
+.campo-busca:focus {
+
+    border-color: #0047b3;
+}
