@@ -1,3 +1,31 @@
+function fazerLogin() {
+
+    const usuario = document
+        .getElementById("usuarioAdmin")
+        .value;
+
+    const senha = document
+        .getElementById("senhaAdmin")
+        .value;
+
+    if (
+        usuario === "admin"
+        &&
+        senha === "1234"
+    ) {
+
+        document.getElementById("loginAdmin")
+            .style.display = "none";
+
+        document.getElementById("painelAdmin")
+            .style.display = "block";
+
+    } else {
+
+        alert("Usuário ou senha inválidos");
+    }
+}
+
 let produtos = [];
 
 function cadastrarProduto() {

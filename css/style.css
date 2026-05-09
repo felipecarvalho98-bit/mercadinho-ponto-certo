@@ -435,3 +435,171 @@ th {
 
     object-fit: cover;
 }
+
+.login-admin {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.7);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 9999;
+}
+
+.login-box {
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 16px;
+
+    width: 90%;
+
+    max-width: 400px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.login-box h2 {
+
+    text-align: center;
+
+    color: #0047b3;
+}
+
+.login-box input {
+
+    padding: 15px;
+
+    border-radius: 8px;
+
+    border: 1px solid #ccc;
+
+    font-size: 16px;
+}
+
+.botao-carrinho {
+
+    max-width: 220px;
+
+    margin-top: 20px;
+}
+
+.modal-carrinho {
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.6);
+
+    display: none;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 9999;
+}
+
+.conteudo-modal {
+
+    background: white;
+
+    width: 90%;
+
+    max-width: 500px;
+
+    border-radius: 16px;
+
+    padding: 20px;
+}
+
+.topo-modal {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+#lista-carrinho-modal {
+
+    list-style: none;
+
+    margin-bottom: 20px;
+}
+
+#lista-carrinho-modal li {
+
+    padding: 10px;
+
+    border-bottom: 1px solid #ddd;
+}
+
+.toast {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background: #0047b3;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s;
+    z-index: 9999;
+    font-weight: bold;
+}
+
+.toast.mostrar {
+    opacity: 1;
+    transform: translateY(-10px);
+}
+
+.loading {
+    position: fixed;
+    inset: 0;
+    background: #0047b3;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    z-index: 10000;
+}
+
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 6px solid white;
+    border-top: 6px solid #ffcc00;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+}
+
+@keyframes girar {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
