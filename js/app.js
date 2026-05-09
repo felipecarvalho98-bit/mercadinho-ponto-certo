@@ -409,7 +409,14 @@ function confirmarEnvioPedido() {
 
             pedido: dadosPedidoFinal.pedidoTexto,
 
-            total: dadosPedidoFinal.totalFinal.toFixed(2)
+            total: dadosPedidoFinal.totalFinal.toFixed(2),
+
+            itens: carrinho.map(produto => {
+                return {
+                    nome: produto.nome,
+                    quantidade: produto.quantidade
+                };
+            })
 
         })
 
