@@ -20,6 +20,8 @@ function fazerLogin() {
         document.getElementById("painelAdmin")
             .style.display = "block";
 
+        carregarPedidos();
+
     } else {
 
         alert("Usuário ou senha inválidos");
@@ -163,4 +165,35 @@ function editarProduto(nome) {
     document.getElementById("produtoImagem").value = produto.imagem;
 
     excluirProduto(nome);
+}
+
+function carregarPedidos() {
+
+    fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec?tipo=pedidos")
+
+        .then(resposta => resposta.json())
+
+        .then(pedidos => {
+
+            const tbody = document.querySelector("#tabelaPedidos tbody");
+
+            tbody.innerHTML = "";
+
+            pedidos.reverse().forEach(pedido => {
+
+                tbody.innerHTML += `
+
+                    <tr>
+                        <td>${pedido.nome}</td>
+                        <td>${pedido.telefone}</td>
+                        <td>${pedido.endereco}</td>
+                        <td>${pedido.pagamento}</td>
+                        <td>${pedido.entrega}</td>
+                        <td>${pedido.pedido}</td>
+                        <td>R$ ${Number(pedido.total).toFixed(2)}</td>
+                    </tr>
+
+                `;
+            });
+        });
 }
