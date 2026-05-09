@@ -173,3 +173,114 @@ button:hover {
 
     font-size: 16px;
 }
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+th,
+td {
+
+    padding: 15px;
+
+    border-bottom: 1px solid #ddd;
+
+    text-align: left;
+}
+
+th {
+
+    background: #0047b3;
+
+    color: white;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 768px) {
+
+    header {
+
+        padding: 15px;
+    }
+
+    .logo-area {
+
+        flex-direction: column;
+
+        text-align: center;
+    }
+
+    .logo-area img {
+
+        width: 80px;
+
+        height: 80px;
+    }
+
+    .logo-area h1 {
+
+        font-size: 24px;
+    }
+
+    .produtos {
+
+        justify-content: center;
+
+        padding: 10px;
+    }
+
+    .produto-card {
+
+        width: 100%;
+
+        max-width: 350px;
+    }
+
+    .produto-card img {
+
+        height: 150px;
+    }
+
+    .carrinho,
+    .cliente {
+
+        margin: 10px;
+
+        padding: 15px;
+    }
+
+    .carrinho li {
+
+        flex-direction: column;
+
+        gap: 10px;
+    }
+
+    .carrinho button {
+
+        width: 100%;
+    }
+
+    button {
+
+        font-size: 18px;
+
+        padding: 15px;
+    }
+
+    input,
+    select {
+
+        font-size: 16px;
+    }
+
+    table {
+
+        display: block;
+
+        overflow-x: auto;
+    }
+}

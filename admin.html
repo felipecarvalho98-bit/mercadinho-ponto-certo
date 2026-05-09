@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Mercadinho Ponto Certo</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+    <header>
+
+        <div class="logo-area">
+
+            <img src="imagens/logo.png" alt="Logo">
+
+            <div>
+                <h1>Painel Administrativo</h1>
+                <p>Mercadinho Ponto Certo</p>
+            </div>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <section class="cliente">
+
+            <h2>Cadastrar Produto</h2>
+
+            <input type="text" id="produtoNome" placeholder="Nome do produto">
+
+            <input type="number" id="produtoPreco" placeholder="Preço">
+
+            <input type="number" id="produtoEstoque" placeholder="Estoque">
+
+            <input type="text" id="produtoImagem" placeholder="URL da imagem">
+
+            <button onclick="cadastrarProduto()">
+                Salvar Produto
+            </button>
+
+        </section>
+
+        <section class="carrinho">
+
+            <h2>Produtos Cadastrados</h2>
+
+            <table id="tabelaProdutos">
+
+                <thead>
+
+                    <tr>
+                        <th>Produto</th>
+                        <th>Preço</th>
+                        <th>Estoque</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+    <script src="js/admin.js"></script>
+
+</body>
+</html>

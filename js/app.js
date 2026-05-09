@@ -1,3 +1,43 @@
+async function carregarProdutos() {
+
+    const resposta = await fetch(
+        "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec"
+    );
+
+    const produtos = await resposta.json();
+
+    const areaProdutos = document.getElementById("produtos");
+
+    areaProdutos.innerHTML = "";
+
+    produtos.forEach(produto => {
+
+        areaProdutos.innerHTML += `
+
+            <div class="produto-card">
+
+                <img src="${produto.imagem}" alt="${produto.nome}">
+
+                <h2>${produto.nome}</h2>
+
+                <p class="preco">
+                    R$ ${produto.preco}
+                </p>
+
+                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco})">
+
+                    Adicionar
+
+                </button>
+
+            </div>
+
+        `;
+    });
+}
+
+carregarProdutos();
+
 let carrinho = [];
 
 function adicionarCarrinho(nome, preco) {
