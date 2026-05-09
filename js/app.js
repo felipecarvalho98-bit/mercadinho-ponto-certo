@@ -38,9 +38,24 @@ function renderizarProdutos(produtos) {
                     R$ ${Number(produto.preco).toFixed(2)}
                 </p>
 
-                <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)})">
-                    Adicionar
-                </button>
+                <p class="estoque">
+                    Estoque: ${produto.estoque}
+                </p>
+
+                ${
+                    Number(produto.estoque) > 0
+                    ? `
+
+                    <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)})">
+                        Adicionar
+                    </button>
+                    `
+                    : `
+                        <button disabled>
+                            Sem estoque
+                        </button>
+                    `
+                }
 
             </div>
 
