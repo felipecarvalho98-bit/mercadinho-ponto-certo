@@ -380,3 +380,19 @@ th {
         font-size: 18px;
     }
 }
+
+.categorias {
+
+    display: flex;
+
+    gap: 10px;
+
+    overflow-x: auto;
+
+    padding: 20px;
+}
+
+.categorias button {
+
+    min-width: 140px;
+}

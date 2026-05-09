@@ -215,3 +215,45 @@ function filtrarProdutos() {
         `;
     });
 }
+
+function filtrarCategoria(categoria) {
+
+    const areaProdutos = document.getElementById("produtos");
+
+    areaProdutos.innerHTML = "";
+
+    let produtosFiltrados = produtosGlobais;
+
+    if (categoria !== "Todos") {
+
+        produtosFiltrados = produtosGlobais.filter(produto => {
+
+            return produto.categoria === categoria;
+        });
+    }
+
+    produtosFiltrados.forEach(produto => {
+
+        areaProdutos.innerHTML += `
+
+            <div class="produto-card">
+
+                <img src="${produto.imagem}" alt="${produto.nome}">
+
+                <h2>${produto.nome}</h2>
+
+                <p class="preco">
+                    R$ ${produto.preco}
+                </p>
+
+                <button onclick="adicionarCarrinho('${produto.nome}', ${produto.preco})">
+
+                    Adicionar
+
+                </button>
+
+            </div>
+
+        `;
+    });
+}

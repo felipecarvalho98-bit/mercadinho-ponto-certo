@@ -10,15 +10,17 @@ function cadastrarProduto() {
 
     const imagem = document.getElementById("produtoImagem").value;
 
+    const categoria = document.getElementById("produtoCategoria").value;
+
     produtos.push({
 
-        nome,
-        preco,
-        estoque,
-        imagem
+    nome,
+    preco,
+    estoque,
+    imagem,
+    categoria
 
     });
-
     atualizarTabela();
 
     fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec", {
@@ -35,7 +37,9 @@ function cadastrarProduto() {
 
         estoque: estoque,
 
-        imagem: imagem
+        imagem: imagem,
+
+        categoria: categoria
 
     })
 
@@ -93,7 +97,10 @@ function limparCampos() {
     document.getElementById("produtoEstoque").value = "";
 
     document.getElementById("produtoImagem").value = "";
+
+    document.getElementById("produtoCategoria").value = "";
 }
+
 function excluirProduto(nome) {
 
     produtos = produtos.filter(produto => produto.nome !== nome);
