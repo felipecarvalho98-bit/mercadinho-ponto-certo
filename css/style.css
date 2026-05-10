@@ -776,3 +776,32 @@ button.btn-atualizar-pedidos {
     cursor: pointer !important;
     display: block !important;
 }
+
+.status-select {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+}
+
+.status-pendente {
+    background-color: #f4b400;
+}
+
+.status-separacao {
+    background-color: #0047b3;
+}
+
+.status-entrega {
+    background-color: #6f42c1;
+}
+
+.status-concluido {
+    background-color: #198754;
+}
+
+.status-cancelado {
+    background-color: #dc3545;
+}

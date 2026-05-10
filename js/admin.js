@@ -195,7 +195,10 @@ function carregarPedidos() {
                         <td>${pedido.pedido}</td>
                         <td>R$ ${Number(pedido.total).toFixed(2)}</td>
                         <td>
-                            <select onchange="alterarStatusPedido(${pedido.linha}, this.value)">
+                            <select 
+                                class="status-select ${classeStatus(pedido.status)}"
+                                onchange="alterarStatusPedido(${pedido.linha}, this.value)"
+                                >
                                 <option value="Pendente" ${pedido.status === "Pendente" ? "selected" : ""}>
                                     Pendente
                                 </option>
@@ -225,6 +228,10 @@ function carregarPedidos() {
 }
 
 function alterarStatusPedido(linha, status) {
+
+    const select = event.target;
+
+    select.className = `status-select ${classeStatus(status)}`;
 
     fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec", {
 
@@ -309,4 +316,29 @@ function atualizarDashboard(pedidos = []) {
     document.getElementById("pedidosConcluidos").innerText = pedidosConcluidos;
 
     document.getElementById("vendasMes").innerText = `R$ ${vendasMes.toFixed(2)}`;
+}
+
+function classeStatus(status) {
+
+    if (status === "Pendente") {
+        return "status-pendente";
+    }
+
+    if (status === "Em separação") {
+        return "status-separacao";
+    }
+
+    if (status === "Saiu para entrega") {
+        return "status-entrega";
+    }
+
+    if (status === "Concluído") {
+        return "status-concluido";
+    }
+
+    if (status === "Cancelado") {
+        return "status-cancelado";
+    }
+
+    return "";
 }
