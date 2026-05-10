@@ -191,9 +191,64 @@ function carregarPedidos() {
                         <td>${pedido.entrega}</td>
                         <td>${pedido.pedido}</td>
                         <td>R$ ${Number(pedido.total).toFixed(2)}</td>
+                        <td>
+                            <select onchange="alterarStatusPedido(${pedido.linha}, this.value)">
+                                <option value="Pendente" ${pedido.status === "Pendente" ? "selected" : ""}>
+                                    Pendente
+                                </option>
+
+                                <option value="Em separação" ${pedido.status === "Em separação" ? "selected" : ""}>
+                                    Em separação
+                                </option>
+
+                                <option value="Saiu para entrega" ${pedido.status === "Saiu para entrega" ? "selected" : ""}>
+                                    Saiu para entrega
+                                </option>
+
+                                <option value="Concluído" ${pedido.status === "Concluído" ? "selected" : ""}>
+                                    Concluído
+                                </option>
+
+                                <option value="Cancelado" ${pedido.status === "Cancelado" ? "selected" : ""}>
+                                    Cancelado
+                                </option>
+                            </select>
+                        </td>
                     </tr>
 
                 `;
             });
         });
+}
+
+function alterarStatusPedido(linha, status) {
+
+    fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+
+            tipo: "status",
+
+            linha: linha,
+
+            status: status
+
+        })
+
+    })
+    .then(resposta => resposta.text())
+    .then(resposta => {
+
+        console.log("Status atualizado:", resposta);
+
+        alert("Status atualizado com sucesso!");
+    })
+    .catch(erro => {
+
+        console.error("Erro ao atualizar status:", erro);
+
+        alert("Erro ao atualizar status.");
+    });
 }
