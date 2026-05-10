@@ -868,3 +868,58 @@ button.btn-atualizar-pedidos {
 .carrinho {
     overflow-x: auto;
 }
+
+/* Produtos em carrossel horizontal no celular */
+
+@media (max-width: 768px) {
+
+    .produtos {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 15px;
+        padding: 15px;
+        scroll-snap-type: x mandatory;
+    }
+
+    .produto-card {
+        min-width: 240px;
+        max-width: 240px;
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+    }
+
+    .produto-card img {
+        height: 130px;
+    }
+
+    .produtos::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .produtos::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 10px;
+    }
+}
+
+.btn-ir-carrinho {
+    position: fixed;
+    bottom: 95px;
+    left: 20px;
+    right: 20px;
+    z-index: 9998;
+    background: #ffcc00;
+    color: #333;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+@media (min-width: 769px) {
+    .btn-ir-carrinho {
+        display: none;
+    }
+}
