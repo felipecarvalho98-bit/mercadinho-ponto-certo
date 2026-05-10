@@ -60,6 +60,30 @@
 
         <section class="cliente">
 
+            <section class="dashboard-admin">
+
+                <div class="card-dashboard">
+                    <h3>Produtos cadastrados</h3>
+                    <p id="totalProdutos">0</p>
+                </div>
+
+                <div class="card-dashboard">
+                    <h3>Pedidos recebidos</h3>
+                    <p id="totalPedidos">0</p>
+                </div>
+
+                <div class="card-dashboard">
+                    <h3>Pedidos pendentes</h3>
+                    <p id="pedidosPendentes">0</p>
+                </div>
+
+                <div class="card-dashboard">
+                    <h3>Pedidos concluídos</h3>
+                    <p id="pedidosConcluidos">0</p>
+                </div>
+
+            </section>
+
             <h2>Cadastrar Produto</h2>
 
             <input type="text" id="produtoNome" placeholder="Nome do produto">
@@ -132,7 +156,7 @@
 
             <h2>Pedidos Recebidos</h2>
 
-            <button onclick="carregarPedidos()">
+            <button onclick="carregarPedidos()" class="btn-atualizar-pedidos">
                 Atualizar Pedidos
             </button>
 

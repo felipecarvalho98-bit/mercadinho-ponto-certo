@@ -52,6 +52,7 @@ function cadastrarProduto() {
 
     });
     atualizarTabela();
+    atualizarDashboard();
 
     fetch("https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec", {
 
@@ -175,6 +176,8 @@ function carregarPedidos() {
 
         .then(pedidos => {
 
+            atualizarDashboard(pedidos);
+
             const tbody = document.querySelector("#tabelaPedidos tbody");
 
             tbody.innerHTML = "";
@@ -251,4 +254,27 @@ function alterarStatusPedido(linha, status) {
 
         alert("Erro ao atualizar status.");
     });
+}
+
+function atualizarDashboard(pedidos = []) {
+
+    const totalProdutos = produtos.length;
+
+    const totalPedidos = pedidos.length;
+
+    const pedidosPendentes = pedidos.filter(pedido => {
+        return pedido.status === "Pendente";
+    }).length;
+
+    const pedidosConcluidos = pedidos.filter(pedido => {
+        return pedido.status === "Concluído";
+    }).length;
+
+    document.getElementById("totalProdutos").innerText = totalProdutos;
+
+    document.getElementById("totalPedidos").innerText = totalPedidos;
+
+    document.getElementById("pedidosPendentes").innerText = pedidosPendentes;
+
+    document.getElementById("pedidosConcluidos").innerText = pedidosConcluidos;
 }
