@@ -712,7 +712,7 @@ button:disabled {
 
 .dashboard-admin {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 15px;
     margin: 20px;
 }

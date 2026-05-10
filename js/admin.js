@@ -247,6 +247,8 @@ function alterarStatusPedido(linha, status) {
         console.log("Status atualizado:", resposta);
 
         alert("Status atualizado com sucesso!");
+
+        carregarPedidos();
     })
     .catch(erro => {
 
@@ -270,6 +272,34 @@ function atualizarDashboard(pedidos = []) {
         return pedido.status === "Concluído";
     }).length;
 
+    const hoje = new Date();
+
+    const mesAtual = hoje.getMonth();
+
+    const anoAtual = hoje.getFullYear();
+
+    let vendasMes = 0;
+
+    pedidos.forEach(pedido => {
+
+        const dataPedido = new Date(pedido.data);
+
+        const mesmoMes = dataPedido.getMonth() === mesAtual;
+
+        const mesmoAno = dataPedido.getFullYear() === anoAtual;
+
+        if (
+            pedido.status === "Concluído"
+            &&
+            mesmoMes
+            &&
+            mesmoAno
+        ) {
+
+            vendasMes += Number(pedido.total);
+        }
+    });
+
     document.getElementById("totalProdutos").innerText = totalProdutos;
 
     document.getElementById("totalPedidos").innerText = totalPedidos;
@@ -277,4 +307,6 @@ function atualizarDashboard(pedidos = []) {
     document.getElementById("pedidosPendentes").innerText = pedidosPendentes;
 
     document.getElementById("pedidosConcluidos").innerText = pedidosConcluidos;
+
+    document.getElementById("vendasMes").innerText = `R$ ${vendasMes.toFixed(2)}`;
 }
