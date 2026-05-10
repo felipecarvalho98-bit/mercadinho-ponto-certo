@@ -205,6 +205,9 @@ function atualizarCarrinho() {
     document.getElementById("total-final").innerHTML = `
         Total final: R$ ${valoresEntrega.totalFinal.toFixed(2)}
     `;
+
+    atualizarResumoFixo(totalItens, valoresEntrega.totalFinal);
+
 }
 
 function calcularValoresEntrega(subtotal) {
@@ -661,4 +664,30 @@ function nomeCategoria(categoria) {
     }
 
     return categoria;
+}
+
+function atualizarResumoFixo(totalItens, totalFinal) {
+
+    const resumoFixo = document.getElementById("resumoFixoCarrinho");
+
+    const resumoItens = document.getElementById("resumoItens");
+
+    const resumoTotal = document.getElementById("resumoTotal");
+
+    if (!resumoFixo || !resumoItens || !resumoTotal) {
+        return;
+    }
+
+    if (totalItens === 0) {
+
+        resumoFixo.style.display = "none";
+
+        return;
+    }
+
+    resumoFixo.style.display = "flex";
+
+    resumoItens.innerText = `${totalItens} item${totalItens > 1 ? "s" : ""}`;
+
+    resumoTotal.innerText = `Total: R$ ${totalFinal.toFixed(2)}`;
 }

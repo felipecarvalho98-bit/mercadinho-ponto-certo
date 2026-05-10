@@ -951,3 +951,45 @@ button.btn-atualizar-pedidos {
         height: 130px;
     }
 }
+
+.resumo-fixo-carrinho {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    .resumo-fixo-carrinho {
+        position: fixed;
+        left: 15px;
+        right: 15px;
+        bottom: 15px;
+        background: #0047b3;
+        color: white;
+        padding: 14px;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        z-index: 9998;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .resumo-fixo-carrinho div {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .resumo-fixo-carrinho button {
+        width: 130px;
+        margin: 0;
+        background: #ffcc00;
+        color: #333;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    body {
+        padding-bottom: 90px;
+    }
+}
