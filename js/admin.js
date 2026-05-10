@@ -30,6 +30,8 @@ function fazerLogin() {
 
 let produtos = [];
 
+let pedidosGlobais = [];
+
 function cadastrarProduto() {
 
     const nome = document.getElementById("produtoNome").value;
@@ -176,7 +178,11 @@ function carregarPedidos() {
 
         .then(pedidos => {
 
+            pedidosGlobais = pedidos;
+
             atualizarDashboard(pedidos);
+
+            renderizarPedidos([...pedidos]);
 
             const tbody = document.querySelector("#tabelaPedidos tbody");
 
@@ -341,4 +347,107 @@ function classeStatus(status) {
     }
 
     return "";
+}
+
+function renderizarPedidos(pedidos) {
+
+    const tbody = document.querySelector("#tabelaPedidos tbody");
+
+    tbody.innerHTML = "";
+
+    pedidos
+        .slice()
+        .reverse()
+        .forEach(pedido => {
+
+        tbody.innerHTML += `
+
+            <tr>
+                <td>${pedido.nome}</td>
+                <td>${pedido.telefone}</td>
+                <td>${pedido.endereco}</td>
+                <td>${pedido.pagamento}</td>
+                <td>${pedido.entrega}</td>
+                <td>${formatarPedido(pedido.pedido)}</td>
+                <td>R$ ${Number(pedido.total).toFixed(2)}</td>
+
+                <td>
+                    <select 
+                        class="status-select ${classeStatus(pedido.status)}"
+                        onchange="alterarStatusPedido(${pedido.linha}, this.value)"
+                    >
+                        <option value="Pendente" ${pedido.status === "Pendente" ? "selected" : ""}>
+                            Pendente
+                        </option>
+
+                        <option value="Em separação" ${pedido.status === "Em separação" ? "selected" : ""}>
+                            Em separação
+                        </option>
+
+                        <option value="Saiu para entrega" ${pedido.status === "Saiu para entrega" ? "selected" : ""}>
+                            Saiu para entrega
+                        </option>
+
+                        <option value="Concluído" ${pedido.status === "Concluído" ? "selected" : ""}>
+                            Concluído
+                        </option>
+
+                        <option value="Cancelado" ${pedido.status === "Cancelado" ? "selected" : ""}>
+                            Cancelado
+                        </option>
+                    </select>
+                </td>
+            </tr>
+
+        `;
+    });
+}
+
+function filtrarPedidosPorMes() {
+
+    const valorFiltro = document.getElementById("filtroMes").value;
+
+    if (!valorFiltro) {
+        renderizarPedidos([...pedidosGlobais]);
+        atualizarDashboard(pedidosGlobais);
+        return;
+    }
+
+    const pedidosFiltrados = pedidosGlobais.filter(pedido => {
+
+        const dataPedido = new Date(pedido.data);
+
+        const ano = dataPedido.getFullYear();
+
+        const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
+
+        const anoMesPedido = `${ano}-${mes}`;
+
+        return anoMesPedido === valorFiltro;
+    });
+
+    renderizarPedidos([...pedidosFiltrados]);
+
+    atualizarDashboard(pedidosFiltrados);
+}
+
+function limparFiltroMes() {
+
+    document.getElementById("filtroMes").value = "";
+
+    renderizarPedidos([...pedidosGlobais]);
+
+    atualizarDashboard(pedidosGlobais);
+}
+
+function formatarPedido(textoPedido) {
+
+    if (!textoPedido) {
+        return "";
+    }
+
+    return textoPedido
+        .split(",")
+        .map(item => item.trim())
+        .join("<br>");
 }

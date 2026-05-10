@@ -4,7 +4,10 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta 
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    >
 
     <title>Admin - Mercadinho Ponto Certo</title>
 
@@ -164,6 +167,23 @@
             <button onclick="carregarPedidos()" class="btn-atualizar-pedidos">
                 Atualizar Pedidos
             </button>
+
+            <div class="filtro-mes">
+                <label for="filtroMes">
+                    Filtrar por mês:
+                </label>
+
+                <input
+                    type="month"
+                    id="filtroMes"
+                    onchange="filtrarPedidosPorMes()"
+                >
+
+                <button onclick="limparFiltroMes()" class="btn-atualizar-pedidos">
+                    Mostrar Todos
+                </button>
+
+            </div>
 
             <table id="tabelaPedidos">
 

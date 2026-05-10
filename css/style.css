@@ -805,3 +805,66 @@ button.btn-atualizar-pedidos {
 .status-cancelado {
     background-color: #dc3545;
 }
+
+.filtro-mes {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0 20px 0;
+    flex-wrap: wrap;
+}
+
+.filtro-mes label {
+    font-weight: bold;
+    color: #333;
+}
+
+.filtro-mes input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.filtro-mes .btn-atualizar-pedidos {
+    margin: 0;
+}
+
+#tabelaPedidos {
+    width: 100%;
+    table-layout: fixed;
+}
+
+#tabelaPedidos th,
+#tabelaPedidos td {
+    white-space: normal;
+    word-break: break-word;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+#tabelaPedidos td:nth-child(3),
+#tabelaPedidos td:nth-child(6) {
+    max-width: 250px;
+}
+
+#tabelaPedidos td:nth-child(6) {
+    line-height: 1.5;
+}
+
+#tabelaPedidos th:nth-child(2),
+#tabelaPedidos td:nth-child(2),
+#tabelaPedidos th:nth-child(5),
+#tabelaPedidos td:nth-child(5),
+#tabelaPedidos th:nth-child(7),
+#tabelaPedidos td:nth-child(7) {
+    width: 110px;
+}
+
+#tabelaPedidos {
+    min-width: 900px;
+}
+
+.carrinho {
+    overflow-x: auto;
+}
