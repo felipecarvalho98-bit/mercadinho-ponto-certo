@@ -24,40 +24,73 @@ function renderizarProdutos(produtos) {
 
     areaProdutos.innerHTML = "";
 
+    const categorias = {};
+
     produtos.forEach(produto => {
+
+        const categoria = produto.categoria || "Outros";
+
+        if (!categorias[categoria]) {
+            categorias[categoria] = [];
+        }
+
+        categorias[categoria].push(produto);
+    });
+
+    Object.keys(categorias).forEach(categoria => {
+
+        let produtosHtml = "";
+
+        categorias[categoria].forEach(produto => {
+
+            produtosHtml += `
+
+                <div class="produto-card">
+
+                    <img src="${produto.imagem}" alt="${produto.nome}">
+
+                    <h2>${produto.nome}</h2>
+
+                    <p class="preco">
+                        R$ ${Number(produto.preco).toFixed(2)}
+                    </p>
+
+                    <p class="estoque">
+                        Estoque: ${produto.estoque}
+                    </p>
+
+                    ${
+                        Number(produto.estoque) > 0
+                        ? `
+                            <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)})">
+                                Adicionar
+                            </button>
+                        `
+                        : `
+                            <button disabled>
+                                Sem estoque
+                            </button>
+                        `
+                    }
+
+                </div>
+
+            `;
+        });
 
         areaProdutos.innerHTML += `
 
-            <div class="produto-card">
+            <section class="linha-categoria">
 
-                <img src="${produto.imagem}" alt="${produto.nome}">
+                <h2 class="titulo-categoria">
+                    ${nomeCategoria(categoria)}
+                </h2>
 
-                <h2>${produto.nome}</h2>
+                <div class="produtos-scroll">
+                    ${produtosHtml}
+                </div>
 
-                <p class="preco">
-                    R$ ${Number(produto.preco).toFixed(2)}
-                </p>
-
-                <p class="estoque">
-                    Estoque: ${produto.estoque}
-                </p>
-
-                ${
-                    Number(produto.estoque) > 0
-                    ? `
-
-                    <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)})">
-                        Adicionar
-                    </button>
-                    `
-                    : `
-                        <button disabled>
-                            Sem estoque
-                        </button>
-                    `
-                }
-
-            </div>
+            </section>
 
         `;
     });
@@ -604,3 +637,28 @@ window.addEventListener("load", () => {
         }, 1200);
     }
 });
+
+function nomeCategoria(categoria) {
+
+    if (categoria === "Bebidas") {
+        return "Bebidas";
+    }
+
+    if (categoria === "Massas") {
+        return "Massas";
+    }
+
+    if (categoria === "Graos") {
+        return "Grãos";
+    }
+
+    if (categoria === "Laticinios") {
+        return "Laticínios";
+    }
+
+    if (categoria === "AguaGas") {
+        return "Água/Gás";
+    }
+
+    return categoria;
+}

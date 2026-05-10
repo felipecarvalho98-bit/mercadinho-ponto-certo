@@ -869,40 +869,6 @@ button.btn-atualizar-pedidos {
     overflow-x: auto;
 }
 
-/* Produtos em carrossel horizontal no celular */
-
-@media (max-width: 768px) {
-
-    .produtos {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 15px;
-        padding: 15px;
-        scroll-snap-type: x mandatory;
-    }
-
-    .produto-card {
-        min-width: 240px;
-        max-width: 240px;
-        flex: 0 0 auto;
-        scroll-snap-align: start;
-    }
-
-    .produto-card img {
-        height: 130px;
-    }
-
-    .produtos::-webkit-scrollbar {
-        height: 6px;
-    }
-
-    .produtos::-webkit-scrollbar-thumb {
-        background: #ccc;
-        border-radius: 10px;
-    }
-}
-
 .btn-ir-carrinho {
     position: fixed;
     bottom: 95px;
@@ -921,5 +887,67 @@ button.btn-atualizar-pedidos {
 @media (min-width: 769px) {
     .btn-ir-carrinho {
         display: none;
+    }
+}
+
+/* Linhas horizontais por categoria */
+
+.produtos {
+    display: block;
+    padding: 0;
+}
+
+.linha-categoria {
+    margin-bottom: 30px;
+}
+
+.titulo-categoria {
+    margin: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.produtos-scroll {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 0 20px 15px 20px;
+    scroll-padding-left: 20px;
+}
+
+.produtos-scroll .produto-card {
+    min-width: 240px;
+    max-width: 240px;
+    flex: 0 0 auto;
+}
+
+.produtos-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.produtos-scroll::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+
+    .produtos {
+        display: block;
+        padding: 0;
+    }
+
+    .produtos-scroll {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .produtos-scroll .produto-card {
+        min-width: 230px;
+        max-width: 230px;
+    }
+
+    .produto-card img {
+        height: 130px;
     }
 }
