@@ -182,6 +182,8 @@ function carregarPedidos() {
 
             atualizarDashboard(pedidos);
 
+            atualizarProdutosMaisVendidos(pedidos);
+
             renderizarPedidos([...pedidos]);
 
             const tbody = document.querySelector("#tabelaPedidos tbody");
@@ -429,6 +431,8 @@ function filtrarPedidosPorMes() {
     renderizarPedidos([...pedidosFiltrados]);
 
     atualizarDashboard(pedidosFiltrados);
+
+    atualizarProdutosMaisVendidos(pedidosFiltrados);
 }
 
 function limparFiltroMes() {
@@ -438,6 +442,8 @@ function limparFiltroMes() {
     renderizarPedidos([...pedidosGlobais]);
 
     atualizarDashboard(pedidosGlobais);
+
+    atualizarProdutosMaisVendidos(pedidosGlobais);
 }
 
 function formatarPedido(textoPedido) {
@@ -450,4 +456,75 @@ function formatarPedido(textoPedido) {
         .split(",")
         .map(item => item.trim())
         .join("<br>");
+}
+
+function atualizarProdutosMaisVendidos(pedidos = []) {
+
+    const ranking = {};
+
+    pedidos.forEach(pedido => {
+
+        if (pedido.status !== "Concluído") {
+            return;
+        }
+
+        if (!pedido.pedido) {
+            return;
+        }
+
+        const itens = pedido.pedido.split(",");
+
+        itens.forEach(item => {
+
+            const texto = item.trim();
+
+            const partes = texto.match(/(.+)\sx(\d+)/);
+
+            if (partes) {
+
+                const nomeProduto = partes[1].trim();
+
+                const quantidade = Number(partes[2]);
+
+                if (!ranking[nomeProduto]) {
+                    ranking[nomeProduto] = 0;
+                }
+
+                ranking[nomeProduto] += quantidade;
+            }
+        });
+    });
+
+    const lista = document.getElementById("listaMaisVendidos");
+
+    if (!lista) {
+        return;
+    }
+
+    lista.innerHTML = "";
+
+    const produtosOrdenados = Object.entries(ranking)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+    if (produtosOrdenados.length === 0) {
+
+        lista.innerHTML = `
+            <li>
+                Nenhum produto vendido ainda
+            </li>
+        `;
+
+        return;
+    }
+
+    produtosOrdenados.forEach(([nome, quantidade], index) => {
+
+        lista.innerHTML += `
+            <li>
+                <span>${index + 1}. ${nome}</span>
+                <strong>${quantidade} unidade(s)</strong>
+            </li>
+        `;
+    });
 }

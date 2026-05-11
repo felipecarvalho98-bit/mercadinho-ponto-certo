@@ -993,3 +993,24 @@ button.btn-atualizar-pedidos {
         padding-bottom: 90px;
     }
 }
+
+.lista-mais-vendidos {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.lista-mais-vendidos li {
+    background: #f5f5f5;
+    margin-bottom: 10px;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.lista-mais-vendidos span {
+    color: #0047b3;
+}
