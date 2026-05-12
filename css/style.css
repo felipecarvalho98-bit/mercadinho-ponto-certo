@@ -843,21 +843,23 @@ button.btn-atualizar-pedidos {
     font-size: 14px;
 }
 
-#tabelaPedidos td:nth-child(3),
-#tabelaPedidos td:nth-child(6) {
+#tabelaPedidos td:nth-child(4),
+#tabelaPedidos td:nth-child(7) {
     max-width: 250px;
 }
 
-#tabelaPedidos td:nth-child(6) {
+#tabelaPedidos td:nth-child(7) {
     line-height: 1.5;
 }
 
-#tabelaPedidos th:nth-child(2),
-#tabelaPedidos td:nth-child(2),
-#tabelaPedidos th:nth-child(5),
-#tabelaPedidos td:nth-child(5),
-#tabelaPedidos th:nth-child(7),
-#tabelaPedidos td:nth-child(7) {
+#tabelaPedidos th:nth-child(1),
+#tabelaPedidos td:nth-child(1),
+#tabelaPedidos th:nth-child(3),
+#tabelaPedidos td:nth-child(3),
+#tabelaPedidos th:nth-child(6),
+#tabelaPedidos td:nth-child(6),
+#tabelaPedidos th:nth-child(8),
+#tabelaPedidos td:nth-child(8) {
     width: 110px;
 }
 
@@ -1013,4 +1015,24 @@ button.btn-atualizar-pedidos {
 
 .lista-mais-vendidos span {
     color: #0047b3;
+}
+
+.filtro-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0 20px 0;
+    flex-wrap: wrap;
+}
+
+.filtro-status label {
+    font-weight: bold;
+    color: #333;
+}
+
+.filtro-status select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
 }

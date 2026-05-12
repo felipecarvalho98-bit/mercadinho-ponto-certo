@@ -195,6 +195,7 @@ function carregarPedidos() {
                 tbody.innerHTML += `
 
                     <tr>
+                        <td>${formatarDataHora(pedido.data)}</td>
                         <td>${pedido.nome}</td>
                         <td>${pedido.telefone}</td>
                         <td>${pedido.endereco}</td>
@@ -357,14 +358,16 @@ function renderizarPedidos(pedidos) {
 
     tbody.innerHTML = "";
 
-    pedidos
-        .slice()
-        .reverse()
-        .forEach(pedido => {
+    const pedidosOrdenados = [...pedidos].sort((a, b) => {
+        return new Date(b.data) - new Date(a.data);
+    });
+
+    pedidosOrdenados.forEach(pedido => {
 
         tbody.innerHTML += `
 
             <tr>
+                <td>${formatarDataHora(pedido.data)}</td>
                 <td>${pedido.nome}</td>
                 <td>${pedido.telefone}</td>
                 <td>${pedido.endereco}</td>
@@ -438,6 +441,8 @@ function filtrarPedidosPorMes() {
 function limparFiltroMes() {
 
     document.getElementById("filtroMes").value = "";
+
+    document.getElementById("filtroStatus").value = "Todos";
 
     renderizarPedidos([...pedidosGlobais]);
 
@@ -526,5 +531,77 @@ function atualizarProdutosMaisVendidos(pedidos = []) {
                 <strong>${quantidade} unidade(s)</strong>
             </li>
         `;
+    });
+}
+
+function aplicarFiltrosPedidos() {
+
+    const valorMes = document.getElementById("filtroMes")?.value;
+
+    const valorStatus = document.getElementById("filtroStatus")?.value || "Todos";
+
+    let pedidosFiltrados = [...pedidosGlobais];
+
+    if (valorMes) {
+
+        pedidosFiltrados = pedidosFiltrados.filter(pedido => {
+
+            const dataPedido = new Date(pedido.data);
+
+            const ano = dataPedido.getFullYear();
+
+            const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
+
+            const anoMesPedido = `${ano}-${mes}`;
+
+            return anoMesPedido === valorMes;
+        });
+    }
+
+    if (valorStatus !== "Todos") {
+
+        pedidosFiltrados = pedidosFiltrados.filter(pedido => {
+            return pedido.status === valorStatus;
+        });
+    }
+
+    renderizarPedidos([...pedidosFiltrados]);
+
+    atualizarDashboard(pedidosFiltrados);
+
+    atualizarProdutosMaisVendidos(pedidosFiltrados);
+}
+
+function formatarDataHora(data) {
+
+    const dataPedido = new Date(data);
+
+    if (isNaN(dataPedido.getTime())) {
+        return data;
+    }
+
+    return dataPedido.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+function formatarDataHora(data) {
+
+    const dataPedido = new Date(data);
+
+    if (isNaN(dataPedido.getTime())) {
+        return data;
+    }
+
+    return dataPedido.toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
     });
 }

@@ -184,7 +184,7 @@
                 <input
                     type="month"
                     id="filtroMes"
-                    onchange="filtrarPedidosPorMes()"
+                    onchange="aplicarFiltrosPedidos()"
                 >
 
                 <button onclick="limparFiltroMes()" class="btn-atualizar-pedidos">
@@ -193,11 +193,48 @@
 
             </div>
 
+            <div class="filtro-status">
+
+                <label for="filtroStatus">
+                    Filtrar por status:
+                </label>
+
+                <select id="filtroStatus" onchange="aplicarFiltrosPedidos()">
+
+                    <option value="Todos">
+                        Todos
+                    </option>
+
+                    <option value="Pendente">
+                        Pendente
+                    </option>
+
+                    <option value="Em separação">
+                        Em separação
+                    </option>
+
+                    <option value="Saiu para entrega">
+                        Saiu para entrega
+                    </option>
+
+                    <option value="Concluído">
+                        Concluído
+                    </option>
+
+                    <option value="Cancelado">
+                        Cancelado
+                    </option>
+
+                </select>
+
+            </div>
+
             <table id="tabelaPedidos">
 
                 <thead>
 
                     <tr>
+                        <th>Data/Hora</th>
                         <th>Cliente</th>
                         <th>Telefone</th>
                         <th>Endereço</th>
