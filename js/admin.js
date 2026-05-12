@@ -202,6 +202,7 @@ function carregarPedidos() {
                         <td>${pedido.pagamento}</td>
                         <td>${pedido.entrega}</td>
                         <td>${pedido.pedido}</td>
+                        <td>${pedido.observacao || "-"}</td>
                         <td>R$ ${Number(pedido.total).toFixed(2)}</td>
                         <td>
                             <select 
