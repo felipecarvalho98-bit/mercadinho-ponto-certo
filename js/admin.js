@@ -374,6 +374,7 @@ function renderizarPedidos(pedidos) {
                 <td>${pedido.pagamento}</td>
                 <td>${pedido.entrega}</td>
                 <td>${formatarPedido(pedido.pedido)}</td>
+                <td>${pedido.observacao || "-"}</td>
                 <td>R$ ${Number(pedido.total).toFixed(2)}</td>
 
                 <td>

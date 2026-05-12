@@ -280,6 +280,7 @@ function finalizarPedido() {
     const endereco = document.getElementById("endereco").value;
     const pagamento = document.getElementById("pagamento").value;
     const entrega = document.getElementById("entrega").value;
+    const observacao = document.getElementById("observacao").value;
 
     if (carrinho.length === 0) {
 
@@ -323,6 +324,11 @@ function finalizarPedido() {
     mensagem += `Endereço: ${endereco}%0A`;
     mensagem += `Pagamento: ${pagamento}%0A`;
     mensagem += `Tipo: ${entrega}%0A%0A`;
+    if (observacao) {
+        mensagem += `Observação: ${observacao}%0A`;
+    }
+
+    mensagem += `%0A`;
 
     mensagem += `ITENS DO PEDIDO:%0A`;
 
@@ -342,6 +348,7 @@ function finalizarPedido() {
         endereco,
         pagamento,
         entrega,
+        observacao,
         pedidoTexto,
         subtotal,
         taxaEntrega,
@@ -379,6 +386,7 @@ function mostrarConfirmacaoPedido() {
         <p><strong>Endereço:</strong> ${dadosPedidoFinal.endereco}</p>
         <p><strong>Pagamento:</strong> ${dadosPedidoFinal.pagamento}</p>
         <p><strong>Tipo:</strong> ${dadosPedidoFinal.entrega}</p>
+        <p><strong>Observação:</strong> ${dadosPedidoFinal.observacao || "Nenhuma"}</p>
 
         <hr>
 
@@ -474,6 +482,8 @@ function confirmarEnvioPedido() {
 
             entrega: dadosPedidoFinal.entrega,
 
+            observacao: dadosPedidoFinal.observacao,
+
             pedido: dadosPedidoFinal.pedidoTexto,
 
             total: dadosPedidoFinal.totalFinal.toFixed(2),
@@ -532,6 +542,7 @@ function limparPedidoAposEnvio() {
     document.getElementById("endereco").value = "";
     document.getElementById("pagamento").value = "";
     document.getElementById("entrega").value = "";
+    document.getElementById("observacao").value = "";
 
     dadosPedidoFinal = null;
 }
