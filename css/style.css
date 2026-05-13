@@ -991,3 +991,10 @@ header {
 .area-cadastro-cliente.mostrar {
     display: flex;
 }
+
+@media (max-width: 768px) {
+
+    .whatsapp-float {
+        bottom: 95px;
+    }
+}
