@@ -22,9 +22,10 @@ header {
 }
 
 .logo-area img {
-    width: 90px;
-    height: 90px;
-    border-radius: 10px;
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: contain;
 }
 
 .logo-area h1 {
@@ -215,9 +216,8 @@ th {
 
     .logo-area img {
 
-        width: 80px;
-
-        height: 80px;
+        width: 100px;
+        height: 100px;
     }
 
     .logo-area h1 {
@@ -1045,4 +1045,43 @@ textarea {
     font-size: 16px;
     resize: vertical;
     font-family: Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+
+    .carrinho {
+        margin: 10px;
+        padding: 12px;
+    }
+
+    .carrinho h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .carrinho li {
+        padding: 8px;
+        font-size: 14px;
+        gap: 6px;
+    }
+
+    .controle-quantidade button {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .controle-quantidade span {
+        font-size: 14px;
+    }
+
+    #total,
+    #taxa-entrega,
+    #total-final {
+        font-size: 16px;
+    }
+
+    #total-final {
+        font-size: 20px;
+    }
 }
