@@ -212,6 +212,13 @@ function atualizarCarrinho() {
 
 function calcularValoresEntrega(subtotal) {
 
+    if (subtotal === 0) {
+        return {
+            taxaEntrega: 0,
+            totalFinal: 0
+        };
+    }
+
     const entrega = document.getElementById("entrega")?.value;
 
     const temAguaOuGas = carrinho.some(produto => {
@@ -680,16 +687,16 @@ function nomeCategoria(categoria) {
 function atualizarResumoFixo(totalItens, totalFinal) {
 
     const resumoFixo = document.getElementById("resumoFixoCarrinho");
-
     const resumoItens = document.getElementById("resumoItens");
-
     const resumoTotal = document.getElementById("resumoTotal");
 
     if (!resumoFixo || !resumoItens || !resumoTotal) {
         return;
     }
 
-    if (totalItens === 0) {
+    const telaMobile = window.innerWidth <= 768;
+
+    if (totalItens === 0 || !telaMobile) {
 
         resumoFixo.style.display = "none";
 
@@ -701,4 +708,74 @@ function atualizarResumoFixo(totalItens, totalFinal) {
     resumoItens.innerText = `${totalItens} item${totalItens > 1 ? "s" : ""}`;
 
     resumoTotal.innerText = `Total: R$ ${totalFinal.toFixed(2)}`;
+}
+
+function buscarCliente() {
+
+    const telefoneBusca = document.getElementById("telefoneBusca").value.trim();
+
+    if (!telefoneBusca) {
+        alert("Digite o telefone para buscar o cadastro.");
+        return;
+    }
+
+    fetch(`${API_URL}?tipo=cliente&telefone=${telefoneBusca}`)
+
+        .then(resposta => resposta.json())
+
+        .then(cliente => {
+
+            if (!cliente) {
+
+                alert("Cliente não encontrado. Preencha os dados para cadastrar.");
+
+                mostrarCadastroCliente();
+
+                document.getElementById("telefone").value = telefoneBusca;
+
+                return;
+            }
+
+            mostrarCadastroCliente();
+
+            document.getElementById("nome").value = cliente.nome;
+            document.getElementById("telefone").value = cliente.telefone;
+            document.getElementById("endereco").value = cliente.endereco;
+
+            alert("Cadastro encontrado!");
+        })
+
+        .catch(erro => {
+
+            console.error("Erro ao buscar cliente:", erro);
+
+            alert("Erro ao buscar cliente.");
+        });
+}
+
+function mostrarBuscaCliente() {
+
+    const areaBusca = document.getElementById("areaBuscaCliente");
+    const areaCadastro = document.getElementById("areaCadastroCliente");
+
+    areaBusca.classList.add("mostrar");
+    areaCadastro.classList.remove("mostrar");
+}
+
+function mostrarCadastroCliente() {
+
+    const areaBusca = document.getElementById("areaBuscaCliente");
+    const areaCadastro = document.getElementById("areaCadastroCliente");
+
+    areaCadastro.classList.add("mostrar");
+    areaBusca.classList.remove("mostrar");
+}
+
+function mostrarCadastroCliente() {
+
+    const areaBusca = document.getElementById("areaBuscaCliente");
+    const areaCadastro = document.getElementById("areaCadastroCliente");
+
+    areaCadastro.classList.add("mostrar");
+    areaBusca.classList.remove("mostrar");
 }

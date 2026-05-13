@@ -22,8 +22,8 @@
 
         <div class="logo-area">
 
-            <button class="botao-carrinho" onclick="abrirCarrinho()">
-                🛒 Carrinho (<span id="contadorCarrinho">0</span>)
+            <button class="botao-carrinho" onclick="abrirCarrinho()" title="Carrinho">
+                <span id="contadorCarrinho">0</span>
             </button>
 
             <img src="imagens/logo.png" alt="Logo">
@@ -121,40 +121,73 @@
                 </h3>
 
                 </section>
+
             <section class="cliente">
 
                 <h2>Dados do Cliente</h2>
 
-                <input type="text" id="nome" placeholder="Seu nome">
+                <div class="opcoes-cliente">
 
-                <input type="text" id="telefone" placeholder="Telefone">
+                    <button type="button" onclick="mostrarBuscaCliente()">
+                        Já tenho cadastro
+                    </button>
 
-                <input type="text" id="endereco" placeholder="Endereço">
+                    <button type="button" onclick="mostrarCadastroCliente()">
+                        Novo cadastro
+                    </button>
 
-                <select id="pagamento">
-                    <option value="">Forma de pagamento</option>
-                    <option>Pix</option>
-                    <option>Dinheiro</option>
-                    <option>Cartão</option>
-                </select>
+                </div>
 
-                <select id="entrega" onchange="atualizarCarrinho()">
-                    <option value="">Entrega ou retirada</option>
-                    <option>Entrega</option>
-                    <option>Retirada</option>
-                </select>
+                <div id="areaBuscaCliente" class="area-busca-cliente">
 
-                <textarea
-                    id="observacao"
-                    placeholder="Observação do pedido (opcional)"
-                    rows="3"
-                ></textarea>
+                    <input
+                        type="text"
+                        id="telefoneBusca"
+                        placeholder="Digite seu telefone"
+                    >
 
-                <button onclick="finalizarPedido()">
-                    Finalizar Pedido
-                </button>
+                    <button type="button" onclick="buscarCliente()">
+                        Buscar cadastro
+                    </button>
+
+                </div>
+
+                <div id="areaCadastroCliente" class="area-cadastro-cliente">
+
+                    <input type="text" id="nome" placeholder="Seu nome">
+
+                    <input type="text" id="telefone" placeholder="Telefone">
+
+                    <input type="text" id="endereco" placeholder="Endereço">
+
+                    <select id="pagamento">
+                        <option value="">Forma de pagamento</option>
+                        <option value="Pix">Pix</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão">Cartão</option>
+                    </select>
+
+                    <select id="entrega" onchange="atualizarCarrinho()">
+                        <option value="">Entrega ou retirada</option>
+                        <option value="Entrega">Entrega</option>
+                        <option value="Retirada">Retirada</option>
+                    </select>
+
+                    <textarea
+                        id="observacao"
+                        placeholder="Observação do pedido (opcional)"
+                        rows="3"
+                    ></textarea>
+
+                    <button onclick="finalizarPedido()">
+                        Finalizar Pedido
+                    </button>
+
+                </div>
 
             </section>
+
+            
     </main>
 
     <script src="js/app.js"></script>
