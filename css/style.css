@@ -1067,3 +1067,199 @@ header {
     width: 220px !important;
     min-width: 220px !important;
 }
+
+.aviso-peso {
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+    margin-top: -8px;
+}
+
+/* ABAS DO ADMIN */
+
+.abas-admin {
+    display: flex;
+    gap: 10px;
+    margin: 20px;
+    flex-wrap: wrap;
+}
+
+.abas-admin button {
+    width: auto !important;
+    min-width: 160px !important;
+    background: #e5e5e5 !important;
+    color: #333 !important;
+    margin: 0 !important;
+}
+
+.abas-admin button.aba-ativa {
+    background: #0047b3 !important;
+    color: white !important;
+}
+
+.conteudo-aba-admin {
+    margin-top: 10px;
+}
+
+/* BUSCA DE PRODUTOS NO ADMIN */
+
+.busca-admin-produto {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.busca-admin-produto input {
+    flex: 1;
+    min-width: 250px;
+}
+
+.busca-admin-produto button {
+    width: 180px !important;
+    min-width: 180px !important;
+}
+
+/* AVISO PRODUTO POR PESO */
+
+.aviso-peso {
+    font-size: 14px;
+    color: #555;
+    font-weight: bold;
+    margin-top: -8px;
+}
+
+/* BOTÕES DA TABELA DE PRODUTOS */
+
+#tabelaProdutos button {
+    width: auto !important;
+    min-width: 80px !important;
+    padding: 8px 12px !important;
+    margin: 3px !important;
+    font-size: 14px !important;
+    display: inline-block !important;
+}
+
+#tabelaProdutos button:first-child {
+    background: #0047b3 !important;
+    color: white !important;
+}
+
+#tabelaProdutos button:last-child {
+    background: red !important;
+    color: white !important;
+}
+
+/* BOTÕES DO CADASTRO DE PRODUTO */
+
+.botoes-produto-admin {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-salvar-produto {
+    width: 220px !important;
+    min-width: 220px !important;
+    height: 52px !important;
+    background: #ffcc00 !important;
+    color: #333 !important;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+}
+
+.btn-limpar-produto {
+    width: 220px !important;
+    min-width: 220px !important;
+    height: 52px !important;
+    background: #0047b3 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+}
+
+.campo-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+.campo-form label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.obs-tipo-venda {
+    margin-top: 8px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    color: #555;
+    background: #f5f7fb;
+    border-left: 4px solid #0047b3;
+    padding: 10px 12px;
+    border-radius: 8px;
+}
+
+.aviso-busca-produto {
+    color: #555;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+/* FORMULÁRIO PRODUTO ADMIN */
+
+.form-produto-admin {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.campo-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.campo-form label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 6px;
+    font-size: 15px;
+}
+
+.obs-tipo-venda {
+    margin-top: 16px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    color: #555;
+    background: #f5f7fb;
+    border-left: 4px solid #0047b3;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.aviso-busca-produto {
+    color: #555;
+    font-weight: bold;
+    margin: 12px 0;
+}
+
+@media (max-width: 768px) {
+    .form-produto-admin {
+        grid-template-columns: 1fr;
+    }
+}

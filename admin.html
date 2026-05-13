@@ -61,7 +61,23 @@
 
     <main id="painelAdmin" style="display: none;">
 
-        <section class="cliente">
+        <nav class="abas-admin">
+
+            <button type="button" data-aba="dashboard" onclick="mostrarAbaAdmin('dashboard')" class="aba-ativa">
+                Vendas
+            </button>
+
+            <button type="button" data-aba="pedidos" onclick="mostrarAbaAdmin('pedidos')">
+                Pedidos
+            </button>
+
+            <button type="button" data-aba="produtos" onclick="mostrarAbaAdmin('produtos')">
+                Produtos
+            </button>
+
+        </nav>
+
+        <section id="abaDashboard" class="conteudo-aba-admin">
 
             <section class="dashboard-admin">
 
@@ -100,158 +116,258 @@
 
             </section>
 
-            <h2>Cadastrar Produto</h2>
-
-            <input type="text" id="produtoNome" placeholder="Nome do produto">
-
-            <input type="number" id="produtoPreco" placeholder="Preço">
-
-            <input type="number" id="produtoEstoque" placeholder="Estoque">
-
-            <input type="text" id="produtoImagem" placeholder="URL da imagem">
-
-            <select id="produtoCategoria">
-
-                <option value="">
-                    Selecione uma categoria
-                </option>
-
-                <option value="Bebidas">
-                    Bebidas
-                </option>
-
-                <option value="Massas">
-                    Massas
-                </option>
-
-                <option value="Graos">
-                    Grãos
-                </option>
-
-                <option value="Laticinios">
-                    Laticínios
-                </option>
-
-                <option value="AguaGas">
-                    Água/Gás
-                </option>
-
-            </select>
-
-            <button onclick="cadastrarProduto()">
-                Salvar Produto
-            </button>
-
         </section>
 
-        <section class="carrinho">
+        <section id="abaPedidos" class="conteudo-aba-admin" style="display: none;">
 
-            <h2>Produtos Cadastrados</h2>
+            <section class="carrinho">
 
-            <table id="tabelaProdutos">
+                <h2>Pedidos Recebidos</h2>
 
-                <thead>
-
-                    <tr>
-                        <th>Produto</th>
-                        <th>Preço</th>
-                        <th>Estoque</th>
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                </tbody>
-
-            </table>
-
-        </section>
-
-        <section class="carrinho">
-
-            <h2>Pedidos Recebidos</h2>
-
-            <button onclick="carregarPedidos()" class="btn-atualizar-pedidos">
-                Atualizar Pedidos
-            </button>
-
-            <div class="filtro-mes">
-                <label for="filtroMes">
-                    Filtrar por mês:
-                </label>
-
-                <input
-                    type="month"
-                    id="filtroMes"
-                    onchange="aplicarFiltrosPedidos()"
-                >
-
-                <button onclick="limparFiltroMes()" class="btn-atualizar-pedidos">
-                    Mostrar Todos
+                <button onclick="carregarPedidos()" class="btn-atualizar-pedidos">
+                    Atualizar Pedidos
                 </button>
 
-            </div>
+                <div class="filtro-mes">
 
-            <div class="filtro-status">
+                    <label for="filtroMes">
+                        Filtrar por mês:
+                    </label>
 
-                <label for="filtroStatus">
-                    Filtrar por status:
-                </label>
+                    <input
+                        type="month"
+                        id="filtroMes"
+                        onchange="aplicarFiltrosPedidos()"
+                    >
 
-                <select id="filtroStatus" onchange="aplicarFiltrosPedidos()">
+                    <button onclick="limparFiltroMes()" class="btn-atualizar-pedidos">
+                        Mostrar Todos
+                    </button>
 
-                    <option value="Todos">
-                        Todos
-                    </option>
+                </div>
 
-                    <option value="Pendente">
-                        Pendente
-                    </option>
+                <div class="filtro-status">
 
-                    <option value="Em separação">
-                        Em separação
-                    </option>
+                    <label for="filtroStatus">
+                        Filtrar por status:
+                    </label>
 
-                    <option value="Saiu para entrega">
-                        Saiu para entrega
-                    </option>
+                    <select id="filtroStatus" onchange="aplicarFiltrosPedidos()">
 
-                    <option value="Concluído">
-                        Concluído
-                    </option>
+                        <option value="Todos">Todos</option>
 
-                    <option value="Cancelado">
-                        Cancelado
-                    </option>
+                        <option value="Pendente">Pendente</option>
 
-                </select>
+                        <option value="Em separação">Em separação</option>
 
-            </div>
+                        <option value="Saiu para entrega">Saiu para entrega</option>
 
-            <table id="tabelaPedidos">
+                        <option value="Concluído">Concluído</option>
 
-                <thead>
+                        <option value="Cancelado">Cancelado</option>
 
-                    <tr>
-                        <th>Data/Hora</th>
-                        <th>Cliente</th>
-                        <th>Telefone</th>
-                        <th>Endereço</th>
-                        <th>Pagamento</th>
-                        <th>Entrega</th>
-                        <th>Pedido</th>
-                        <th>Observação</th>
-                        <th>Total</th>
-                        <th>Status</th>
-                        <th>Ação</th>
-                    </tr>
+                    </select>
 
-                </thead>
+                </div>
 
-                <tbody></tbody>
+                <table id="tabelaPedidos">
 
-            </table>
+                    <thead>
+
+                        <tr>
+                            <th>Data/Hora</th>
+                            <th>Cliente</th>
+                            <th>Telefone</th>
+                            <th>Endereço</th>
+                            <th>Pagamento</th>
+                            <th>Entrega</th>
+                            <th>Pedido</th>
+                            <th>Observação</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+
+            </section>
+
+        </section>
+
+        <section id="abaProdutos" class="conteudo-aba-admin" style="display: none;">
+
+            <section class="carrinho">
+
+                <h2>Cadastrar Produto</h2>
+
+                <div class="form-produto-admin">
+
+                    <div class="campo-form">
+                        <label for="produtoNome">Nome do produto</label>
+                        <input type="text" id="produtoNome" placeholder="Ex: Queijo mussarela">
+                    </div>
+
+                    <div class="campo-form">
+                        <label for="produtoPreco">Preço unitário ou preço por kg</label>
+                        <input
+                            type="number"
+                            id="produtoPreco"
+                            placeholder="Ex: 37.00"
+                            step="0.01"
+                        >
+                    </div>
+
+                    <div class="campo-form">
+                        <label for="produtoEstoque">Estoque</label>
+                        <input type="number" id="produtoEstoque" placeholder="Ex: 10 ou 9.5">
+                    </div>
+
+                    <div class="campo-form">
+                        <label for="produtoImagem">URL da imagem</label>
+                        <input type="text" id="produtoImagem" placeholder="Cole aqui a URL da imagem">
+                    </div>
+
+                    <div class="campo-form">
+                        <label for="produtoCodigo">Código de barras ou código interno</label>
+                        <input type="text" id="produtoCodigo" placeholder="Ex: 7890000000000 ou 1111">
+                    </div>
+
+                    <div class="campo-form">
+                        <label for="produtoCategoria">Categoria</label>
+
+                        <select id="produtoCategoria">
+
+                            <option value="">
+                                Selecione uma categoria
+                            </option>
+
+                            <option value="Bebidas">
+                                Bebidas
+                            </option>
+
+                            <option value="Massas">
+                                Massas
+                            </option>
+
+                            <option value="Graos">
+                                Grãos
+                            </option>
+
+                            <option value="Laticinios">
+                                Laticínios
+                            </option>
+
+                            <option value="AguaGas">
+                                Água/Gás
+                            </option>
+
+                            <option value="Hortifruti">
+                                Hortifruti
+                            </option>
+
+                            <option value="Frios">
+                                Frios
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="campo-form">
+                        <label for="produtoTipoVenda">Tipo de venda</label>
+
+                        <select id="produtoTipoVenda">
+
+                            <option value="">
+                                Selecione o tipo de venda
+                            </option>
+
+                            <option value="Unidade">
+                                Unidade
+                            </option>
+
+                            <option value="Peso">
+                                Peso
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <p class="obs-tipo-venda">
+                    Para produtos do tipo <strong>Peso</strong>, cadastre o preço referente a <strong>1 kg</strong>.
+                </p>
+
+                <div class="botoes-produto-admin">
+
+                    <button onclick="cadastrarProduto()" class="btn-salvar-produto">
+                        Salvar Produto
+                    </button>
+
+                    <button onclick="limparCampos()" class="btn-limpar-produto">
+                        Limpar Campos
+                    </button>
+
+                </div>
+
+            </section>
+
+            <section class="carrinho">
+
+                <h2>Produtos Cadastrados</h2>
+
+                <p class="aviso-busca-produto">
+                    Pesquise pelo nome ou código para editar ou excluir um produto.
+                </p>
+
+                <div class="busca-admin-produto">
+
+                    <input
+                        type="text"
+                        id="campoBuscaProdutoAdmin"
+                        placeholder="Buscar produto por nome ou código"
+                    >
+
+                    <button onclick="buscarProdutoAdmin()" class="btn-atualizar-pedidos">
+                        Buscar Produto
+                    </button>
+
+                    <button onclick="limparBuscaProdutoAdmin()" class="btn-atualizar-pedidos">
+                        Limpar Busca
+                    </button>
+
+                </div>
+
+                <div id="areaTabelaProdutos" style="display: none;">
+
+                    <table id="tabelaProdutos">
+
+                        <thead>
+
+                            <tr>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Código</th>
+                                <th>Tipo</th>
+                                <th>Ações</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
 
         </section>
 

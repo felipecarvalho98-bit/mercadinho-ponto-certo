@@ -52,7 +52,7 @@ function renderizarProdutos(produtos) {
                     <h2>${produto.nome}</h2>
 
                     <p class="preco">
-                        R$ ${Number(produto.preco).toFixed(2)}
+                        R$ ${Number(produto.preco).toFixed(2)} ${produto.tipoVenda === "Peso" ? "/kg" : ""}
                     </p>
 
                     <p class="estoque">
@@ -62,7 +62,7 @@ function renderizarProdutos(produtos) {
                     ${
                         Number(produto.estoque) > 0
                         ? `
-                            <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)})">
+                            <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)}, '${produto.tipoVenda || "Unidade"}')">
                                 Adicionar
                             </button>
                         `
@@ -98,7 +98,27 @@ function renderizarProdutos(produtos) {
 
 carregarProdutos();
 
-function adicionarCarrinho(nome, preco, categoria, estoque) {
+function adicionarCarrinho(nome, preco, categoria, estoque, tipoVenda = "Unidade") {
+
+    let quantidade = 1;
+
+    if (tipoVenda === "Peso") {
+
+        const pesoInformado = prompt(
+            "Digite o peso em kg. Exemplo: 0.5 para 500g ou 1.25 para 1kg e 250g"
+        );
+
+        if (!pesoInformado) {
+            return;
+        }
+
+        quantidade = Number(pesoInformado.replace(",", "."));
+
+        if (isNaN(quantidade) || quantidade <= 0) {
+            alert("Peso inválido.");
+            return;
+        }
+    }
 
     const produtoExistente = carrinho.find(produto => {
         return produto.nome === nome;
@@ -106,12 +126,14 @@ function adicionarCarrinho(nome, preco, categoria, estoque) {
 
     if (produtoExistente) {
 
-        if (produtoExistente.quantidade >= produtoExistente.estoque) {
+        const novaQuantidade = produtoExistente.quantidade + quantidade;
+
+        if (novaQuantidade > produtoExistente.estoque) {
             alert("Estoque insuficiente para este produto!");
             return;
         }
 
-        produtoExistente.quantidade++;
+        produtoExistente.quantidade = novaQuantidade;
 
     } else {
 
@@ -120,12 +142,18 @@ function adicionarCarrinho(nome, preco, categoria, estoque) {
             return;
         }
 
+        if (quantidade > estoque) {
+            alert("Estoque insuficiente para este produto!");
+            return;
+        }
+
         carrinho.push({
             nome,
             preco,
             categoria,
             estoque,
-            quantidade: 1
+            tipoVenda,
+            quantidade
         });
     }
 
@@ -159,7 +187,7 @@ function atualizarCarrinho() {
             <li>
                 <div>
                     <strong>${produto.nome}</strong><br>
-                    R$ ${produto.preco.toFixed(2)} cada
+                    R$ ${produto.preco.toFixed(2)} ${produto.tipoVenda === "Peso" ? "por kg" : "cada"}
                 </div>
 
                 <div class="controle-quantidade">
@@ -169,7 +197,7 @@ function atualizarCarrinho() {
                     </button>
 
                     <span>
-                        ${produto.quantidade}
+                        ${formatarQuantidade(produto)}
                     </span>
 
                     <button onclick="aumentarQuantidade(${index})">
@@ -256,21 +284,29 @@ function removerItem(index) {
 
 function aumentarQuantidade(index) {
 
-    if (carrinho[index].quantidade >= carrinho[index].estoque) {
+    const produto = carrinho[index];
+
+    const incremento = produto.tipoVenda === "Peso" ? 0.1 : 1;
+
+    if (produto.quantidade + incremento > produto.estoque) {
         alert("Estoque insuficiente para este produto!");
         return;
     }
 
-    carrinho[index].quantidade++;
+    produto.quantidade += incremento;
 
     atualizarCarrinho();
 }
 
 function diminuirQuantidade(index) {
 
-    if (carrinho[index].quantidade > 1) {
+    const produto = carrinho[index];
 
-        carrinho[index].quantidade--;
+    const decremento = produto.tipoVenda === "Peso" ? 0.1 : 1;
+
+    if (produto.quantidade > decremento) {
+
+        produto.quantidade -= decremento;
 
     } else {
 
@@ -320,7 +356,7 @@ function finalizarPedido() {
 
         const subtotalProduto = produto.preco * produto.quantidade;
 
-        return `${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}`;
+        return `${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}`;
         
     }).join(", ");
 
@@ -342,7 +378,7 @@ function finalizarPedido() {
     carrinho.forEach(produto => {
         const subtotalProduto = produto.preco * produto.quantidade;
 
-        mensagem += `- ${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}%0A`;
+        mensagem += `- ${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}%0A`;
     });
 
     mensagem += `%0ASubtotal: R$ ${subtotal.toFixed(2)}`;
@@ -382,7 +418,7 @@ function mostrarConfirmacaoPedido() {
 
         itensHtml += `
             <p>
-                ${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}
+                ${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}
             </p>
         `;
     });
@@ -617,7 +653,7 @@ function atualizarModalCarrinho() {
         lista.innerHTML += `
 
             <li>
-                ${produto.nome} x${produto.quantidade} - R$ ${subtotalProduto.toFixed(2)}
+                ${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}
             </li>
 
         `;
@@ -802,3 +838,12 @@ window.addEventListener("scroll", () => {
 
     atualizarResumoFixo(totalItens, valoresEntrega.totalFinal);
 });
+
+function formatarQuantidade(produto) {
+
+    if (produto.tipoVenda === "Peso") {
+        return `${produto.quantidade.toFixed(3).replace(".", ",")} kg`;
+    }
+
+    return `${produto.quantidade} un`;
+}
