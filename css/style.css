@@ -1263,3 +1263,41 @@ header {
         grid-template-columns: 1fr;
     }
 }
+
+/* CONTROLE DE PESO NO CARD */
+
+.controle-peso-card {
+    margin-top: 12px;
+}
+
+.controle-peso-card p {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.botoes-peso {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.botoes-peso button {
+    flex: 1;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    font-size: 13px !important;
+    background: #0047b3 !important;
+    color: white !important;
+}
+
+.input-peso-manual {
+    margin: 8px 0;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.controle-peso-card > button {
+    margin-top: 8px !important;
+}

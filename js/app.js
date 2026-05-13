@@ -1,11 +1,12 @@
+const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec";
+
+const NUMERO_WHATSAPP = "55859843003";
+
 let produtosGlobais = [];
 let carrinho = [];
 let dadosPedidoFinal = null;
 let pedidoEnviando = false;
-
-const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec";
-
-const NUMERO_WHATSAPP = "558598439003";
+let pesosSelecionados = {};
 
 async function carregarProdutos() {
 
@@ -43,6 +44,11 @@ function renderizarProdutos(produtos) {
 
         categorias[categoria].forEach(produto => {
 
+            const preco = Number(produto.preco);
+            const estoque = Number(produto.estoque);
+            const tipoVenda = produto.tipoVenda || "Unidade";
+            const codigo = produto.codigo || produto.nome;
+
             produtosHtml += `
 
                 <div class="produto-card">
@@ -52,20 +58,67 @@ function renderizarProdutos(produtos) {
                     <h2>${produto.nome}</h2>
 
                     <p class="preco">
-                        R$ ${Number(produto.preco).toFixed(2)} ${produto.tipoVenda === "Peso" ? "/kg" : ""}
+                        R$ ${preco.toFixed(2)} ${tipoVenda === "Peso" ? "/kg" : ""}
                     </p>
 
                     <p class="estoque">
-                        Estoque: ${produto.estoque}
+                        Estoque: ${estoque} ${tipoVenda === "Peso" ? "kg" : "un"}
                     </p>
 
                     ${
-                        Number(produto.estoque) > 0
-                        ? `
-                            <button onclick="adicionarCarrinho('${produto.nome}', ${Number(produto.preco)}, '${produto.categoria}', ${Number(produto.estoque)}, '${produto.tipoVenda || "Unidade"}')">
-                                Adicionar
-                            </button>
-                        `
+                        estoque > 0
+                        ? tipoVenda === "Peso"
+                            ? `
+                                <div class="controle-peso-card">
+
+                                    <p>
+                                        Peso: <span id="peso-${codigo}">0,000 kg</span>
+                                    </p>
+
+                                    <div class="botoes-peso">
+
+                                        <button onclick="alterarPesoProduto('${codigo}', -0.1)">
+                                            -100g
+                                        </button>
+
+                                        <button onclick="alterarPesoProduto('${codigo}', 0.1)">
+                                            +100g
+                                        </button>
+
+                                    </div>
+
+                                    <div class="botoes-peso">
+
+                                        <button onclick="alterarPesoProduto('${codigo}', -0.5)">
+                                            -500g
+                                        </button>
+
+                                        <button onclick="alterarPesoProduto('${codigo}', 0.5)">
+                                            +500g
+                                        </button>
+
+                                    </div>
+
+                                    <input
+                                        type="number"
+                                        step="0.001"
+                                        min="0"
+                                        placeholder="Ou digite o peso em kg"
+                                        class="input-peso-manual"
+                                        onchange="definirPesoManual('${codigo}', this.value)"
+                                    >
+
+                                    <button onclick="adicionarCarrinhoPorCodigo('${codigo}')">
+                                        Adicionar
+                                    </button>
+
+                                </div>
+                            `
+                            : `
+                                <button onclick="adicionarCarrinhoPorCodigo('${codigo}')">
+                                    Adicionar
+                                </button>
+                            `
                         : `
                             <button disabled>
                                 Sem estoque
@@ -96,37 +149,48 @@ function renderizarProdutos(produtos) {
     });
 }
 
-carregarProdutos();
+function adicionarCarrinhoPorCodigo(codigo) {
 
-function adicionarCarrinho(nome, preco, categoria, estoque, tipoVenda = "Unidade") {
+    const produto = produtosGlobais.find(item => {
+        return String(item.codigo || item.nome) === String(codigo);
+    });
+
+    if (!produto) {
+        alert("Produto não encontrado.");
+        return;
+    }
+
+    adicionarCarrinho(
+        produto.nome,
+        Number(produto.preco),
+        produto.categoria,
+        Number(produto.estoque),
+        produto.tipoVenda || "Unidade",
+        produto.codigo || produto.nome
+    );
+}
+
+function adicionarCarrinho(nome, preco, categoria, estoque, tipoVenda = "Unidade", codigo = "") {
 
     let quantidade = 1;
 
     if (tipoVenda === "Peso") {
 
-        const pesoInformado = prompt(
-            "Digite o peso em kg. Exemplo: 0.5 para 500g ou 1.25 para 1kg e 250g"
-        );
+        quantidade = pesosSelecionados[codigo] || 0;
 
-        if (!pesoInformado) {
-            return;
-        }
-
-        quantidade = Number(pesoInformado.replace(",", "."));
-
-        if (isNaN(quantidade) || quantidade <= 0) {
-            alert("Peso inválido.");
+        if (quantidade <= 0) {
+            alert("Escolha a quantidade em kg antes de adicionar.");
             return;
         }
     }
 
     const produtoExistente = carrinho.find(produto => {
-        return produto.nome === nome;
+        return produto.codigo === codigo;
     });
 
     if (produtoExistente) {
 
-        const novaQuantidade = produtoExistente.quantidade + quantidade;
+        const novaQuantidade = Number((produtoExistente.quantidade + quantidade).toFixed(3));
 
         if (novaQuantidade > produtoExistente.estoque) {
             alert("Estoque insuficiente para este produto!");
@@ -153,13 +217,74 @@ function adicionarCarrinho(nome, preco, categoria, estoque, tipoVenda = "Unidade
             categoria,
             estoque,
             tipoVenda,
+            codigo,
             quantidade
         });
+    }
+
+    if (tipoVenda === "Peso") {
+
+        pesosSelecionados[codigo] = 0;
+
+        const elementoPeso = document.getElementById(`peso-${codigo}`);
+
+        if (elementoPeso) {
+            elementoPeso.innerText = "0,000 kg";
+        }
+
+        const inputManual = document.querySelector(`#peso-${codigo}`)
+            ?.closest(".controle-peso-card")
+            ?.querySelector(".input-peso-manual");
+
+        if (inputManual) {
+            inputManual.value = "";
+        }
     }
 
     atualizarCarrinho();
 
     mostrarToast();
+}
+
+function alterarPesoProduto(codigo, valor) {
+
+    if (!pesosSelecionados[codigo]) {
+        pesosSelecionados[codigo] = 0;
+    }
+
+    pesosSelecionados[codigo] += valor;
+
+    if (pesosSelecionados[codigo] < 0) {
+        pesosSelecionados[codigo] = 0;
+    }
+
+    pesosSelecionados[codigo] = Number(pesosSelecionados[codigo].toFixed(3));
+
+    const elementoPeso = document.getElementById(`peso-${codigo}`);
+
+    if (elementoPeso) {
+        elementoPeso.innerText = `${pesosSelecionados[codigo].toFixed(3).replace(".", ",")} kg`;
+    }
+}
+
+function definirPesoManual(codigo, valor) {
+
+    let peso = Number(String(valor).replace(",", "."));
+
+    if (isNaN(peso) || peso < 0) {
+        alert("Peso inválido.");
+        return;
+    }
+
+    peso = Number(peso.toFixed(3));
+
+    pesosSelecionados[codigo] = peso;
+
+    const elementoPeso = document.getElementById(`peso-${codigo}`);
+
+    if (elementoPeso) {
+        elementoPeso.innerText = `${peso.toFixed(3).replace(".", ",")} kg`;
+    }
 }
 
 function atualizarCarrinho() {
@@ -171,7 +296,6 @@ function atualizarCarrinho() {
     lista.innerHTML = "";
 
     let total = 0;
-
     let totalItens = 0;
 
     carrinho.forEach((produto, index) => {
@@ -218,7 +342,7 @@ function atualizarCarrinho() {
         `;
     });
 
-    document.getElementById("contadorCarrinho").innerText = totalItens;
+    document.getElementById("contadorCarrinho").innerText = Math.ceil(totalItens);
 
     const valoresEntrega = calcularValoresEntrega(total);
 
@@ -234,8 +358,7 @@ function atualizarCarrinho() {
         Total final: R$ ${valoresEntrega.totalFinal.toFixed(2)}
     `;
 
-    atualizarResumoFixo(totalItens, valoresEntrega.totalFinal);
-
+    atualizarResumoFixo(Math.ceil(totalItens), valoresEntrega.totalFinal);
 }
 
 function calcularValoresEntrega(subtotal) {
@@ -258,11 +381,8 @@ function calcularValoresEntrega(subtotal) {
     if (entrega === "Entrega") {
 
         if (temAguaOuGas) {
-
             taxaEntrega = 0;
-
         } else if (subtotal < 50) {
-
             taxaEntrega = 3;
         }
     }
@@ -293,7 +413,7 @@ function aumentarQuantidade(index) {
         return;
     }
 
-    produto.quantidade += incremento;
+    produto.quantidade = Number((produto.quantidade + incremento).toFixed(3));
 
     atualizarCarrinho();
 }
@@ -306,7 +426,7 @@ function diminuirQuantidade(index) {
 
     if (produto.quantidade > decremento) {
 
-        produto.quantidade -= decremento;
+        produto.quantidade = Number((produto.quantidade - decremento).toFixed(3));
 
     } else {
 
@@ -326,23 +446,18 @@ function finalizarPedido() {
     const observacao = document.getElementById("observacao").value;
 
     if (carrinho.length === 0) {
-
         alert("Carrinho vazio!");
-
         return;
     }
 
     if (!nome || !telefone || !endereco || !pagamento || !entrega) {
-
         alert("Preencha todos os dados do cliente!");
-
         return;
     }
 
     let subtotal = 0;
 
     carrinho.forEach(produto => {
-
         subtotal += produto.preco * produto.quantidade;
     });
 
@@ -357,7 +472,7 @@ function finalizarPedido() {
         const subtotalProduto = produto.preco * produto.quantidade;
 
         return `${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}`;
-        
+
     }).join(", ");
 
     let mensagem = `NOVO PEDIDO%0A%0A`;
@@ -366,16 +481,16 @@ function finalizarPedido() {
     mensagem += `Telefone: ${telefone}%0A`;
     mensagem += `Endereço: ${endereco}%0A`;
     mensagem += `Pagamento: ${pagamento}%0A`;
-    mensagem += `Tipo: ${entrega}%0A%0A`;
+    mensagem += `Tipo: ${entrega}%0A`;
+
     if (observacao) {
         mensagem += `Observação: ${observacao}%0A`;
     }
 
-    mensagem += `%0A`;
-
-    mensagem += `ITENS DO PEDIDO:%0A`;
+    mensagem += `%0AITENS DO PEDIDO:%0A`;
 
     carrinho.forEach(produto => {
+
         const subtotalProduto = produto.preco * produto.quantidade;
 
         mensagem += `- ${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}%0A`;
@@ -403,10 +518,6 @@ function finalizarPedido() {
 }
 
 function mostrarConfirmacaoPedido() {
-
-    console.log("Modal de confirmação chamado");
-
-    criarModalConfirmacaoSeNaoExistir();
 
     const resumo = document.getElementById("resumoPedido");
 
@@ -444,45 +555,6 @@ function mostrarConfirmacaoPedido() {
     `;
 
     document.getElementById("modalConfirmacao").style.display = "flex";
-}
-
-function criarModalConfirmacaoSeNaoExistir() {
-
-    const modalExiste = document.getElementById("modalConfirmacao");
-
-    if (modalExiste) {
-        return;
-    }
-
-    const modal = document.createElement("div");
-
-    modal.id = "modalConfirmacao";
-
-    modal.className = "modal-confirmacao";
-
-    modal.innerHTML = `
-        <div class="confirmacao-box">
-
-            <h2>Confirmar Pedido</h2>
-
-            <div id="resumoPedido"></div>
-
-            <div class="botoes-confirmacao">
-
-                <button onclick="confirmarEnvioPedido()">
-                    Confirmar
-                </button>
-
-                <button onclick="fecharConfirmacao()" class="btn-cancelar">
-                    Cancelar
-                </button>
-
-            </div>
-
-        </div>
-    `;
-
-    document.body.appendChild(modal);
 }
 
 function fecharConfirmacao() {
@@ -648,7 +720,7 @@ function atualizarModalCarrinho() {
 
         const subtotalProduto = produto.preco * produto.quantidade;
 
-        total += produto.preco;
+        total += subtotalProduto;
 
         lista.innerHTML += `
 
@@ -679,45 +751,6 @@ function mostrarToast() {
         toast.classList.remove("mostrar");
 
     }, 2000);
-}
-
-window.addEventListener("load", () => {
-
-    const loading = document.getElementById("loading");
-
-    if (loading) {
-
-        setTimeout(() => {
-
-            loading.style.display = "none";
-
-        }, 1200);
-    }
-});
-
-function nomeCategoria(categoria) {
-
-    if (categoria === "Bebidas") {
-        return "Bebidas";
-    }
-
-    if (categoria === "Massas") {
-        return "Massas";
-    }
-
-    if (categoria === "Graos") {
-        return "Grãos";
-    }
-
-    if (categoria === "Laticinios") {
-        return "Laticínios";
-    }
-
-    if (categoria === "AguaGas") {
-        return "Água/Gás";
-    }
-
-    return categoria;
 }
 
 function atualizarResumoFixo(totalItens, totalFinal) {
@@ -752,6 +785,24 @@ function atualizarResumoFixo(totalItens, totalFinal) {
     resumoItens.innerText = `${totalItens} item${totalItens > 1 ? "s" : ""}`;
 
     resumoTotal.innerText = `Total: R$ ${totalFinal.toFixed(2)}`;
+}
+
+function mostrarBuscaCliente() {
+
+    const areaBusca = document.getElementById("areaBuscaCliente");
+    const areaCadastro = document.getElementById("areaCadastroCliente");
+
+    areaBusca.classList.add("mostrar");
+    areaCadastro.classList.remove("mostrar");
+}
+
+function mostrarCadastroCliente() {
+
+    const areaBusca = document.getElementById("areaBuscaCliente");
+    const areaCadastro = document.getElementById("areaCadastroCliente");
+
+    areaCadastro.classList.add("mostrar");
+    areaBusca.classList.remove("mostrar");
 }
 
 function buscarCliente() {
@@ -797,31 +848,46 @@ function buscarCliente() {
         });
 }
 
-function mostrarBuscaCliente() {
+function formatarQuantidade(produto) {
 
-    const areaBusca = document.getElementById("areaBuscaCliente");
-    const areaCadastro = document.getElementById("areaCadastroCliente");
+    if (produto.tipoVenda === "Peso") {
+        return `${produto.quantidade.toFixed(3).replace(".", ",")} kg`;
+    }
 
-    areaBusca.classList.add("mostrar");
-    areaCadastro.classList.remove("mostrar");
+    return `${produto.quantidade} un`;
 }
 
-function mostrarCadastroCliente() {
+function nomeCategoria(categoria) {
 
-    const areaBusca = document.getElementById("areaBuscaCliente");
-    const areaCadastro = document.getElementById("areaCadastroCliente");
+    if (categoria === "Bebidas") {
+        return "Bebidas";
+    }
 
-    areaCadastro.classList.add("mostrar");
-    areaBusca.classList.remove("mostrar");
-}
+    if (categoria === "Massas") {
+        return "Massas";
+    }
 
-function mostrarCadastroCliente() {
+    if (categoria === "Graos") {
+        return "Grãos";
+    }
 
-    const areaBusca = document.getElementById("areaBuscaCliente");
-    const areaCadastro = document.getElementById("areaCadastroCliente");
+    if (categoria === "Laticinios") {
+        return "Laticínios";
+    }
 
-    areaCadastro.classList.add("mostrar");
-    areaBusca.classList.remove("mostrar");
+    if (categoria === "AguaGas") {
+        return "Água/Gás";
+    }
+
+    if (categoria === "Hortifruti") {
+        return "Hortifruti";
+    }
+
+    if (categoria === "Frios") {
+        return "Frios";
+    }
+
+    return categoria;
 }
 
 window.addEventListener("scroll", () => {
@@ -836,14 +902,21 @@ window.addEventListener("scroll", () => {
 
     const valoresEntrega = calcularValoresEntrega(total);
 
-    atualizarResumoFixo(totalItens, valoresEntrega.totalFinal);
+    atualizarResumoFixo(Math.ceil(totalItens), valoresEntrega.totalFinal);
 });
 
-function formatarQuantidade(produto) {
+window.addEventListener("load", () => {
 
-    if (produto.tipoVenda === "Peso") {
-        return `${produto.quantidade.toFixed(3).replace(".", ",")} kg`;
+    const loading = document.getElementById("loading");
+
+    if (loading) {
+
+        setTimeout(() => {
+
+            loading.style.display = "none";
+
+        }, 1200);
     }
+});
 
-    return `${produto.quantidade} un`;
-}
+carregarProdutos();
