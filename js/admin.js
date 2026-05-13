@@ -230,6 +230,21 @@ function carregarPedidos() {
                                 </option>
                             </select>
                         </td>
+
+                        <td>
+                            ${
+                                pedido.status === "Saiu para entrega"
+                                ? `
+                                    <button 
+                                        class="btn-avisar-cliente"
+                                        onclick="avisarClienteWhatsApp('${pedido.nome}', '${pedido.telefone}')"
+                                    >
+                                        Avisar cliente
+                                    </button>
+                                `
+                                : "-"
+                            }
+                        </td>
                     </tr>
 
                 `;
@@ -404,6 +419,22 @@ function renderizarPedidos(pedidos) {
                         </option>
                     </select>
                 </td>
+
+                <td>
+                    ${
+                        pedido.status === "Saiu para entrega"
+                        ? `
+                            <button 
+                                class="btn-avisar-cliente"
+                                onclick="avisarClienteWhatsApp('${pedido.nome}', '${pedido.telefone}')"
+                            >
+                                Avisar cliente
+                            </button>
+                        `
+                        : "-"
+                    }
+                </td>
+
             </tr>
 
         `;
@@ -606,4 +637,17 @@ function formatarDataHora(data) {
         hour: "2-digit",
         minute: "2-digit"
     });
+}
+
+function avisarClienteWhatsApp(nome, telefone) {
+
+    const telefoneLimpo = String(telefone).replace(/\D/g, "");
+
+    const numeroCliente = `55${telefoneLimpo}`;
+
+    const mensagem = `Olá, ${nome}! Seu pedido do Mercadinho Ponto Certo saiu para entrega. Em breve chegará no endereço informado.`;
+
+    const mensagemFormatada = encodeURIComponent(mensagem);
+
+    window.open(`https://wa.me/${numeroCliente}?text=${mensagemFormatada}`, "_blank");
 }

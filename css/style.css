@@ -998,3 +998,72 @@ header {
         bottom: 95px;
     }
 }
+
+.btn-avisar-cliente {
+    width: auto;
+    padding: 10px 14px;
+    margin: 0;
+    background: #25d366;
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.btn-avisar-cliente:hover {
+    background: #1ebe5d;
+}
+
+/* AJUSTE BOTÃO AVISAR CLIENTE NO ADMIN */
+
+.btn-avisar-cliente {
+    width: 140px !important;
+    min-width: 140px !important;
+    padding: 10px 12px !important;
+    margin: 0 !important;
+    background: #25d366 !important;
+    color: white !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+}
+
+.btn-avisar-cliente:hover {
+    background: #1ebe5d !important;
+}
+
+#tabelaPedidos th:last-child,
+#tabelaPedidos td:last-child {
+    width: 160px !important;
+    min-width: 160px !important;
+    text-align: center;
+}
+
+/* AJUSTE BOTÕES DO ADMIN */
+
+.btn-atualizar-pedidos {
+    width: 220px !important;
+    min-width: 220px !important;
+    height: 52px !important;
+    padding: 12px 18px !important;
+    margin: 15px 0 20px 0 !important;
+    background-color: #0047b3 !important;
+    color: white !important;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-atualizar-pedidos:hover {
+    background-color: #00368a !important;
+}
+
+.filtro-mes .btn-atualizar-pedidos {
+    width: 220px !important;
+    min-width: 220px !important;
+}
