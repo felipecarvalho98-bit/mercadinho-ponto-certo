@@ -300,7 +300,9 @@ function atualizarCarrinho() {
 
     carrinho.forEach((produto, index) => {
 
-        const subtotalProduto = produto.preco * produto.quantidade;
+        const precoAtual = obterPrecoProduto(produto);
+
+        const subtotalProduto = precoAtual * produto.quantidade;
 
         total += subtotalProduto;
 
@@ -311,7 +313,7 @@ function atualizarCarrinho() {
             <li>
                 <div>
                     <strong>${produto.nome}</strong><br>
-                    R$ ${produto.preco.toFixed(2)} ${produto.tipoVenda === "Peso" ? "por kg" : "cada"}
+                    R$ ${precoAtual.toFixed(2)} ${produto.tipoVenda === "Peso" ? "por kg" : "cada"}
                 </div>
 
                 <div class="controle-quantidade">
@@ -458,7 +460,7 @@ function finalizarPedido() {
     let subtotal = 0;
 
     carrinho.forEach(produto => {
-        subtotal += produto.preco * produto.quantidade;
+        subtotal += obterPrecoProduto(produto) * produto.quantidade;
     });
 
     const valoresEntrega = calcularValoresEntrega(subtotal);
@@ -469,7 +471,9 @@ function finalizarPedido() {
 
     const pedidoTexto = carrinho.map(produto => {
 
-        const subtotalProduto = produto.preco * produto.quantidade;
+        const precoAtual = obterPrecoProduto(produto);
+
+        const subtotalProduto = precoAtual * produto.quantidade;
 
         return `${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}`;
 
@@ -491,7 +495,9 @@ function finalizarPedido() {
 
     carrinho.forEach(produto => {
 
-        const subtotalProduto = produto.preco * produto.quantidade;
+        const precoAtual = obterPrecoProduto(produto);
+
+        const subtotalProduto = precoAtual * produto.quantidade;
 
         mensagem += `- ${produto.nome} x${formatarQuantidade(produto)} - R$ ${subtotalProduto.toFixed(2)}%0A`;
     });
@@ -525,7 +531,9 @@ function mostrarConfirmacaoPedido() {
 
     carrinho.forEach(produto => {
 
-        const subtotalProduto = produto.preco * produto.quantidade;
+        const precoAtual = obterPrecoProduto(produto);
+
+        const subtotalProduto = precoAtual * produto.quantidade;
 
         itensHtml += `
             <p>
@@ -718,7 +726,9 @@ function atualizarModalCarrinho() {
 
     carrinho.forEach(produto => {
 
-        const subtotalProduto = produto.preco * produto.quantidade;
+        const precoAtual = obterPrecoProduto(produto);
+
+        const subtotalProduto = precoAtual * produto.quantidade;
 
         total += subtotalProduto;
 
@@ -928,4 +938,26 @@ function formatarEstoque(estoque, tipoVenda) {
     }
 
     return `${Number(estoque)} un`;
+}
+
+function normalizarTexto(texto) {
+    return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+}
+
+function produtoEhGas(produto) {
+    return normalizarTexto(produto.nome).includes("gas");
+}
+
+function obterPrecoProduto(produto) {
+
+    const pagamento = document.getElementById("pagamento")?.value;
+
+    if (produtoEhGas(produto) && pagamento === "Cartão") {
+        return 123;
+    }
+
+    return Number(produto.preco);
 }
