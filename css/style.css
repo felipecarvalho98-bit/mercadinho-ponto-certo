@@ -1301,3 +1301,14 @@ header {
 .controle-peso-card > button {
     margin-top: 8px !important;
 }
+
+.aviso-gas {
+    margin-top: 8px;
+    background: #fff3cd;
+    color: #664d03;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1.4;
+}

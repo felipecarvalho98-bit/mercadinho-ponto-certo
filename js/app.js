@@ -61,6 +61,17 @@ function renderizarProdutos(produtos) {
                         R$ ${preco.toFixed(2)} ${tipoVenda === "Peso" ? "/kg" : ""}
                     </p>
 
+                    ${
+                        normalizarTexto(produto.nome).includes("gas")
+                        ? `
+                            <p class="aviso-gas">
+                                Pix/Dinheiro: R$ 120,00<br>
+                                Cartão: R$ 123,00
+                            </p>
+                        `
+                        : ""
+                    }
+
                     <p class="estoque">
                         stoque: ${formatarEstoque(estoque, tipoVenda)}
                     </p>
