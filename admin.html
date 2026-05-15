@@ -223,7 +223,12 @@
 
                     <div class="campo-form">
                         <label for="produtoEstoque">Estoque</label>
-                        <input type="number" id="produtoEstoque" placeholder="Ex: 10 ou 9.5">
+                        <input
+                            type="number"
+                            id="produtoEstoque"
+                            placeholder="Unidades ou kg em estoque"
+                            step="0.001"
+                        >
                     </div>
 
                     <div class="campo-form">
@@ -301,7 +306,8 @@
                 </div>
 
                 <p class="obs-tipo-venda">
-                    Para produtos do tipo <strong>Peso</strong>, cadastre o preço referente a <strong>1 kg</strong>.
+                    Para produtos do tipo <strong>Peso</strong>, cadastre o preço referente a <strong>1 kg</strong> e o estoque em <strong>kg</strong>.
+                    Para produtos do tipo <strong>Unidade</strong>, cadastre o estoque em unidades.
                 </p>
 
                 <div class="botoes-produto-admin">

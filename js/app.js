@@ -1,6 +1,6 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec";
 
-const NUMERO_WHATSAPP = "55859843003";
+const NUMERO_WHATSAPP = "558598439003";
 
 let produtosGlobais = [];
 let carrinho = [];
@@ -62,7 +62,7 @@ function renderizarProdutos(produtos) {
                     </p>
 
                     <p class="estoque">
-                        Estoque: ${estoque} ${tipoVenda === "Peso" ? "kg" : "un"}
+                        stoque: ${formatarEstoque(estoque, tipoVenda)}
                     </p>
 
                     ${
@@ -920,3 +920,12 @@ window.addEventListener("load", () => {
 });
 
 carregarProdutos();
+
+function formatarEstoque(estoque, tipoVenda) {
+
+    if (tipoVenda === "Peso") {
+        return `${Number(estoque).toFixed(3).replace(".", ",")} kg`;
+    }
+
+    return `${Number(estoque)} un`;
+}

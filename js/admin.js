@@ -248,7 +248,7 @@ function atualizarTabela(listaProdutos = produtos) {
 
                 <td>R$ ${Number(produto.preco).toFixed(2)}</td>
 
-                <td>${produto.estoque}</td>
+                <td>${formatarEstoqueAdmin(produto.estoque, produto.tipoVenda)}</td>
 
                 <td>${produto.codigo || "-"}</td>
 
@@ -667,7 +667,7 @@ function atualizarProdutosMaisVendidos(pedidos = []) {
         lista.innerHTML += `
             <li>
                 <span>${index + 1}. ${nome}</span>
-                <strong>${quantidade.toFixed(3).replace(".", ",")} unidade(s)</strong>
+                <strong>${formatarQuantidadeRanking(nome, quantidade)}</strong>
             </li>
         `;
     });
@@ -783,4 +783,26 @@ function avisarClienteWhatsApp(nome, telefone) {
     const mensagemFormatada = encodeURIComponent(mensagem);
 
     window.open(`https://wa.me/${numeroCliente}?text=${mensagemFormatada}`, "_blank");
+}
+
+function formatarEstoqueAdmin(estoque, tipoVenda) {
+
+    if (tipoVenda === "Peso") {
+        return `${Number(estoque).toFixed(3).replace(".", ",")} kg`;
+    }
+
+    return `${Number(estoque)} un`;
+}
+
+function formatarQuantidadeRanking(nomeProduto, quantidade) {
+
+    const produto = produtos.find(item => {
+        return item.nome === nomeProduto;
+    });
+
+    if (produto && produto.tipoVenda === "Peso") {
+        return `${quantidade.toFixed(3).replace(".", ",")} kg`;
+    }
+
+    return `${quantidade} unidade(s)`;
 }
