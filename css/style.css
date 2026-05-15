@@ -1312,3 +1312,24 @@ header {
     font-weight: bold;
     line-height: 1.4;
 }
+
+.filtro-dia {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0 20px 0;
+    flex-wrap: wrap;
+}
+
+.filtro-dia label {
+    font-weight: bold;
+    color: #333;
+}
+
+.filtro-dia input {
+    width: auto;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}

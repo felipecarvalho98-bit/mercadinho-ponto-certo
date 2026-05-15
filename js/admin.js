@@ -676,6 +676,9 @@ function atualizarProdutosMaisVendidos(pedidos = []) {
 function aplicarFiltrosPedidos() {
 
     const valorMes = document.getElementById("filtroMes")?.value;
+
+    const valorDia = document.getElementById("filtroDia")?.value;
+
     const valorStatus = document.getElementById("filtroStatus")?.value || "Todos";
 
     let pedidosFiltrados = [...pedidosGlobais];
@@ -685,11 +688,32 @@ function aplicarFiltrosPedidos() {
         pedidosFiltrados = pedidosFiltrados.filter(pedido => {
 
             const dataPedido = new Date(pedido.data);
+
             const ano = dataPedido.getFullYear();
+
             const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
+
             const anoMesPedido = `${ano}-${mes}`;
 
             return anoMesPedido === valorMes;
+        });
+    }
+
+    if (valorDia) {
+
+        pedidosFiltrados = pedidosFiltrados.filter(pedido => {
+
+            const dataPedido = new Date(pedido.data);
+
+            const ano = dataPedido.getFullYear();
+
+            const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
+
+            const dia = String(dataPedido.getDate()).padStart(2, "0");
+
+            const dataFormatada = `${ano}-${mes}-${dia}`;
+
+            return dataFormatada === valorDia;
         });
     }
 
@@ -710,6 +734,9 @@ function aplicarFiltrosPedidos() {
 function limparFiltroMes() {
 
     document.getElementById("filtroMes").value = "";
+
+    document.getElementById("filtroDia").value = "";
+
     document.getElementById("filtroStatus").value = "Todos";
 
     renderizarPedidos([...pedidosGlobais]);
