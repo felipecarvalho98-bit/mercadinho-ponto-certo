@@ -1333,3 +1333,23 @@ header {
     border: 1px solid #ccc;
     font-size: 16px;
 }
+
+.btn-abrir-sheets {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 260px;
+    min-height: 50px;
+    margin-top: 20px;
+    padding: 12px 18px;
+    background: #198754;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btn-abrir-sheets:hover {
+    background: #146c43;
+}
