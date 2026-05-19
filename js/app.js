@@ -598,6 +598,10 @@ function confirmarEnvioPedido() {
         botaoConfirmar.innerText = "Enviando...";
     }
 
+    const linkWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${dadosPedidoFinal.mensagem}`;
+
+    const janelaWhatsApp = window.open("", "_blank");
+
     fetch(API_URL, {
 
         method: "POST",
@@ -637,7 +641,14 @@ function confirmarEnvioPedido() {
 
         console.log(resposta);
 
-        window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${dadosPedidoFinal.mensagem}`);
+        if (janelaWhatsApp) {
+
+            janelaWhatsApp.location.href = linkWhatsApp;
+
+        } else {
+
+            window.location.href = linkWhatsApp;
+        }
 
         fecharConfirmacao();
 
@@ -655,6 +666,10 @@ function confirmarEnvioPedido() {
         console.error("Erro ao enviar pedido:", erro);
 
         alert("Erro ao enviar pedido. Tente novamente.");
+
+        if (janelaWhatsApp) {
+            janelaWhatsApp.close();
+        }
 
         pedidoEnviando = false;
 
