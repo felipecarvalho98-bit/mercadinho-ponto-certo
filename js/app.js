@@ -598,7 +598,7 @@ function confirmarEnvioPedido() {
         botaoConfirmar.innerText = "Enviando...";
     }
 
-    const linkWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${dadosPedidoFinal.mensagem}`;
+    const linkWhatsApp = `https://api.whatsapp.com/send?phone=${NUMERO_WHATSAPP}&text=${dadosPedidoFinal.mensagem}`;
 
     const janelaWhatsApp = window.open("", "_blank");
 
