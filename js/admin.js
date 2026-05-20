@@ -428,7 +428,7 @@ function renderizarPedidos(pedidos) {
     tbody.innerHTML = "";
 
     const pedidosOrdenados = [...pedidos].sort((a, b) => {
-        return new Date(b.data) - new Date(a.data);
+        return new Date(a.data) - new Date(b.data);
     });
 
     pedidosOrdenados.forEach(pedido => {
