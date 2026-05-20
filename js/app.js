@@ -10,13 +10,30 @@ let pesosSelecionados = {};
 
 async function carregarProdutos() {
 
-    const resposta = await fetch(API_URL);
+    mostrarCarregamento("Carregando produtos...");
 
-    const produtos = await resposta.json();
+    try {
 
-    produtosGlobais = produtos;
+        const resposta = await fetch(API_URL);
 
-    renderizarProdutos(produtos);
+        const produtos = await resposta.json();
+
+        produtosGlobais = produtos;
+
+        renderizarProdutos(produtos);
+
+    } catch (erro) {
+
+        console.error("Erro ao carregar produtos:", erro);
+
+        alert("Erro ao carregar produtos. Tente atualizar a página.");
+
+    } finally {
+
+        setTimeout(() => {
+            esconderCarregamento();
+        }, 500);
+    }
 }
 
 function renderizarProdutos(produtos) {
@@ -598,78 +615,88 @@ function confirmarEnvioPedido() {
         botaoConfirmar.innerText = "Enviando...";
     }
 
+    mostrarCarregamento("Processando pedido...");
+
     const linkWhatsApp = `https://api.whatsapp.com/send?phone=${NUMERO_WHATSAPP}&text=${dadosPedidoFinal.mensagem}`;
 
-    const janelaWhatsApp = window.open("", "_blank");
+    const dadosParaEnviar = {
+
+        tipo: "pedido",
+
+        nome: dadosPedidoFinal.nome,
+
+        telefone: dadosPedidoFinal.telefone,
+
+        endereco: dadosPedidoFinal.endereco,
+
+        pagamento: dadosPedidoFinal.pagamento,
+
+        entrega: dadosPedidoFinal.entrega,
+
+        observacao: dadosPedidoFinal.observacao,
+
+        pedido: dadosPedidoFinal.pedidoTexto,
+
+        total: dadosPedidoFinal.totalFinal.toFixed(2),
+
+        itens: carrinho.map(produto => {
+            return {
+                nome: produto.nome,
+                quantidade: produto.quantidade
+            };
+        })
+    };
+
+    console.log("Enviando pedido para o Sheets:", dadosParaEnviar);
 
     fetch(API_URL, {
 
         method: "POST",
 
-        body: JSON.stringify({
-
-            tipo: "pedido",
-
-            nome: dadosPedidoFinal.nome,
-
-            telefone: dadosPedidoFinal.telefone,
-
-            endereco: dadosPedidoFinal.endereco,
-
-            pagamento: dadosPedidoFinal.pagamento,
-
-            entrega: dadosPedidoFinal.entrega,
-
-            observacao: dadosPedidoFinal.observacao,
-
-            pedido: dadosPedidoFinal.pedidoTexto,
-
-            total: dadosPedidoFinal.totalFinal.toFixed(2),
-
-            itens: carrinho.map(produto => {
-                return {
-                    nome: produto.nome,
-                    quantidade: produto.quantidade
-                };
-            })
-
-        })
+        body: JSON.stringify(dadosParaEnviar)
 
     })
-    .then(res => res.text())
-    .then(resposta => {
+    .then(resposta => resposta.text())
 
-        console.log(resposta);
+    .then(respostaTexto => {
 
-        if (janelaWhatsApp) {
+        console.log("Resposta do Apps Script:", respostaTexto);
 
-            janelaWhatsApp.location.href = linkWhatsApp;
+        if (respostaTexto.toLowerCase().includes("sucesso")) {
+
+            // Primeiro limpa tudo no site
+            fecharConfirmacao();
+
+            limparPedidoAposEnvio();
+
+            esconderCarregamento();
+
+            pedidoEnviando = false;
+
+            if (botaoConfirmar) {
+                botaoConfirmar.disabled = false;
+                botaoConfirmar.innerText = "Confirmar";
+            }
+
+            // Só depois abre o WhatsApp
+            window.open(linkWhatsApp, "_blank");
 
         } else {
 
-            window.location.href = linkWhatsApp;
-        }
-
-        fecharConfirmacao();
-
-        limparPedidoAposEnvio();
-
-        pedidoEnviando = false;
-
-        if (botaoConfirmar) {
-            botaoConfirmar.disabled = false;
-            botaoConfirmar.innerText = "Confirmar";
+            alert("O pedido foi enviado, mas a resposta do sistema foi diferente. Verifique a planilha.");
         }
     })
+
     .catch(erro => {
 
-        console.error("Erro ao enviar pedido:", erro);
+        console.error("Erro completo ao enviar pedido:", erro);
 
-        alert("Erro ao enviar pedido. Tente novamente.");
+        alert("Erro ao enviar pedido. Verifique sua internet e tente novamente.");
+    })
 
-        if (janelaWhatsApp) {
-            janelaWhatsApp.close();
-        }
+    .finally(() => {
+
+        esconderCarregamento();
 
         pedidoEnviando = false;
 
@@ -678,60 +705,6 @@ function confirmarEnvioPedido() {
             botaoConfirmar.innerText = "Confirmar";
         }
     });
-}
-
-function limparPedidoAposEnvio() {
-
-    carrinho = [];
-
-    atualizarCarrinho();
-
-    document.getElementById("nome").value = "";
-    document.getElementById("telefone").value = "";
-    document.getElementById("endereco").value = "";
-    document.getElementById("pagamento").value = "";
-    document.getElementById("entrega").value = "";
-    document.getElementById("observacao").value = "";
-
-    dadosPedidoFinal = null;
-}
-
-function filtrarProdutos() {
-
-    const busca = document
-        .getElementById("campoBusca")
-        .value
-        .toLowerCase();
-
-    const produtosFiltrados = produtosGlobais.filter(produto => {
-
-        return produto.nome.toLowerCase().includes(busca);
-    });
-
-    renderizarProdutos(produtosFiltrados);
-}
-
-function filtrarCategoria(categoria) {
-
-    let produtosFiltrados = produtosGlobais;
-
-    if (categoria !== "Todos") {
-
-        produtosFiltrados = produtosGlobais.filter(produto => {
-
-            return produto.categoria === categoria;
-        });
-    }
-
-    renderizarProdutos(produtosFiltrados);
-}
-
-function abrirCarrinho() {
-
-    document.getElementById("modalCarrinho")
-        .style.display = "flex";
-
-    atualizarModalCarrinho();
 }
 
 function fecharCarrinho() {
@@ -845,10 +818,19 @@ function buscarCliente() {
 
     const telefoneBusca = document.getElementById("telefoneBusca").value.trim();
 
+    const botaoBuscar = document.getElementById("btnBuscarCliente");
+
     if (!telefoneBusca) {
         alert("Digite o telefone para buscar o cadastro.");
         return;
     }
+
+    if (botaoBuscar) {
+        botaoBuscar.disabled = true;
+        botaoBuscar.innerText = "Buscando...";
+    }
+
+    mostrarCarregamento("Buscando cadastro...");
 
     fetch(`${API_URL}?tipo=cliente&telefone=${telefoneBusca}`)
 
@@ -881,16 +863,17 @@ function buscarCliente() {
             console.error("Erro ao buscar cliente:", erro);
 
             alert("Erro ao buscar cliente.");
+        })
+
+        .finally(() => {
+
+            esconderCarregamento();
+
+            if (botaoBuscar) {
+                botaoBuscar.disabled = false;
+                botaoBuscar.innerText = "Buscar cadastro";
+            }
         });
-}
-
-function formatarQuantidade(produto) {
-
-    if (produto.tipoVenda === "Peso") {
-        return `${produto.quantidade.toFixed(3).replace(".", ",")} kg`;
-    }
-
-    return `${produto.quantidade} un`;
 }
 
 function nomeCategoria(categoria) {
@@ -932,7 +915,7 @@ window.addEventListener("scroll", () => {
     let totalItens = 0;
 
     carrinho.forEach(produto => {
-        total += produto.preco * produto.quantidade;
+        total += obterPrecoProduto(produto) * produto.quantidade;
         totalItens += produto.quantidade;
     });
 
@@ -943,19 +926,15 @@ window.addEventListener("scroll", () => {
 
 window.addEventListener("load", () => {
 
-    const loading = document.getElementById("loading");
+    setTimeout(() => {
+        esconderCarregamento();
+    }, 1200);
 
-    if (loading) {
-
-        setTimeout(() => {
-
-            loading.style.display = "none";
-
-        }, 1200);
-    }
 });
 
-carregarProdutos();
+document.addEventListener("DOMContentLoaded", () => {
+    carregarProdutos();
+});
 
 function formatarEstoque(estoque, tipoVenda) {
 
@@ -986,4 +965,101 @@ function obterPrecoProduto(produto) {
     }
 
     return Number(produto.preco);
+}
+
+function mostrarCarregamento(mensagem = "Carregando...") {
+
+    const aviso = document.getElementById("avisoCarregamento");
+    const texto = document.getElementById("textoCarregamento");
+
+    if (!aviso || !texto) {
+        return;
+    }
+
+    texto.innerText = mensagem;
+
+    aviso.style.display = "flex";
+}
+
+function esconderCarregamento() {
+
+    const aviso = document.getElementById("avisoCarregamento");
+
+    if (aviso) {
+        aviso.style.display = "none";
+    }
+
+    const loadingAntigo = document.getElementById("loading");
+
+    if (loadingAntigo) {
+        loadingAntigo.style.display = "none";
+    }
+}
+
+function formatarQuantidade(produto) {
+
+    if (produto.tipoVenda === "Peso") {
+        return `${Number(produto.quantidade).toFixed(3).replace(".", ",")} kg`;
+    }
+
+    return `${produto.quantidade} un`;
+}
+
+function limparPedidoAposEnvio() {
+
+    carrinho = [];
+
+    dadosPedidoFinal = null;
+
+    pedidoEnviando = false;
+
+    atualizarCarrinho();
+
+    const campos = [
+        "nome",
+        "telefone",
+        "endereco",
+        "pagamento",
+        "entrega",
+        "observacao",
+        "telefoneBusca"
+    ];
+
+    campos.forEach(id => {
+
+        const campo = document.getElementById(id);
+
+        if (campo) {
+            campo.value = "";
+        }
+    });
+
+    const areaBusca = document.getElementById("areaBuscaCliente");
+    const areaCadastro = document.getElementById("areaCadastroCliente");
+
+    if (areaBusca) {
+        areaBusca.classList.remove("mostrar");
+    }
+
+    if (areaCadastro) {
+        areaCadastro.classList.remove("mostrar");
+    }
+
+    const modalCarrinho = document.getElementById("modalCarrinho");
+
+    if (modalCarrinho) {
+        modalCarrinho.style.display = "none";
+    }
+
+    const resumoPedido = document.getElementById("resumoPedido");
+
+    if (resumoPedido) {
+        resumoPedido.innerHTML = "";
+    }
+
+    const resumoFixo = document.getElementById("resumoFixoCarrinho");
+
+    if (resumoFixo) {
+        resumoFixo.style.display = "none";
+    }
 }

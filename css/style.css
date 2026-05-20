@@ -1353,3 +1353,41 @@ header {
 .btn-abrir-sheets:hover {
     background: #146c43;
 }
+
+/* AVISO DE CARREGAMENTO */
+
+.aviso-carregamento {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+}
+
+.caixa-carregamento {
+    background: white;
+    padding: 28px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.spinner-carregamento {
+    width: 45px;
+    height: 45px;
+    border: 5px solid #ddd;
+    border-top: 5px solid #0047b3;
+    border-radius: 50%;
+    animation: girar 1s linear infinite;
+    margin: 0 auto 15px auto;
+}
+
+.caixa-carregamento p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
