@@ -463,17 +463,23 @@ header {
     transform: translateY(-10px);
 }
 
-.loading {
+#loading {
     position: fixed;
     inset: 0;
     background: #0047b3;
     color: white;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    gap: 15px;
-    z-index: 10000;
+    justify-content: center;
+    z-index: 30000;
+}
+
+#loading p {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 15px;
 }
 
 .loader {

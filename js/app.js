@@ -10,7 +10,11 @@ let pesosSelecionados = {};
 
 async function carregarProdutos() {
 
-    mostrarCarregamento("Carregando produtos...");
+    const loadingInicial = document.getElementById("loading");
+
+    if (loadingInicial) {
+        loadingInicial.style.display = "flex";
+    }
 
     try {
 
@@ -22,17 +26,27 @@ async function carregarProdutos() {
 
         renderizarProdutos(produtos);
 
+        setTimeout(() => {
+
+            if (loadingInicial) {
+                loadingInicial.style.display = "none";
+            }
+
+            esconderCarregamento();
+
+        }, 800);
+
     } catch (erro) {
 
         console.error("Erro ao carregar produtos:", erro);
 
+        if (loadingInicial) {
+            loadingInicial.style.display = "none";
+        }
+
+        esconderCarregamento();
+
         alert("Erro ao carregar produtos. Tente atualizar a página.");
-
-    } finally {
-
-        setTimeout(() => {
-            esconderCarregamento();
-        }, 500);
     }
 }
 
@@ -922,14 +936,6 @@ window.addEventListener("scroll", () => {
     const valoresEntrega = calcularValoresEntrega(total);
 
     atualizarResumoFixo(Math.ceil(totalItens), valoresEntrega.totalFinal);
-});
-
-window.addEventListener("load", () => {
-
-    setTimeout(() => {
-        esconderCarregamento();
-    }, 1200);
-
 });
 
 document.addEventListener("DOMContentLoaded", () => {
