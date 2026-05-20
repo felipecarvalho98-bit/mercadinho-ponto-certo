@@ -833,3 +833,24 @@ function formatarQuantidadeRanking(nomeProduto, quantidade) {
 
     return `${quantidade} unidade(s)`;
 }
+
+function filtrarPedidosHoje() {
+
+    const hoje = new Date();
+
+    const anoHoje = hoje.getFullYear();
+
+    const mesHoje = String(hoje.getMonth() + 1).padStart(2, "0");
+
+    const diaHoje = String(hoje.getDate()).padStart(2, "0");
+
+    const dataHoje = `${anoHoje}-${mesHoje}-${diaHoje}`;
+
+    const filtroDia = document.getElementById("filtroDia");
+
+    if (filtroDia) {
+        filtroDia.value = dataHoje;
+    }
+
+    aplicarFiltrosPedidos();
+}

@@ -1397,3 +1397,85 @@ header {
     font-weight: bold;
     color: #333;
 }
+
+/* CAIXA COM ROLAGEM PARA TABELA DE PEDIDOS */
+
+.tabela-scroll-admin {
+    width: 100%;
+    max-height: 650px;
+    overflow: auto;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: white;
+}
+
+#tabelaPedidos {
+    min-width: 1200px;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+#tabelaPedidos th,
+#tabelaPedidos td {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    vertical-align: top;
+    font-size: 14px;
+    padding: 10px;
+}
+
+#tabelaPedidos th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #0047b3;
+    color: white;
+}
+
+#tabelaPedidos td:nth-child(4),
+#tabelaPedidos td:nth-child(7),
+#tabelaPedidos td:nth-child(8) {
+    line-height: 1.4;
+}
+
+#tabelaPedidos th:nth-child(1),
+#tabelaPedidos td:nth-child(1) {
+    width: 130px;
+}
+
+#tabelaPedidos th:nth-child(2),
+#tabelaPedidos td:nth-child(2) {
+    width: 150px;
+}
+
+#tabelaPedidos th:nth-child(3),
+#tabelaPedidos td:nth-child(3) {
+    width: 120px;
+}
+
+#tabelaPedidos th:nth-child(4),
+#tabelaPedidos td:nth-child(4) {
+    width: 220px;
+}
+
+#tabelaPedidos th:nth-child(7),
+#tabelaPedidos td:nth-child(7) {
+    width: 230px;
+}
+
+#tabelaPedidos th:nth-child(8),
+#tabelaPedidos td:nth-child(8) {
+    width: 180px;
+}
+
+#tabelaPedidos th:nth-child(10),
+#tabelaPedidos td:nth-child(10) {
+    width: 170px;
+}
+
+#tabelaPedidos th:nth-child(11),
+#tabelaPedidos td:nth-child(11) {
+    width: 170px;
+}

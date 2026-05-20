@@ -152,6 +152,10 @@
                         Mostrar Todos
                     </button>
 
+                    <button onclick="filtrarPedidosHoje()" class="btn-atualizar-pedidos">
+                        Pedidos de Hoje
+                    </button>
+
                 </div>
 
                 <div class="filtro-dia">
@@ -192,29 +196,33 @@
 
                 </div>
 
-                <table id="tabelaPedidos">
+                <div class="tabela-scroll-admin">
 
-                    <thead>
+                    <table id="tabelaPedidos">
 
-                        <tr>
-                            <th>Data/Hora</th>
-                            <th>Cliente</th>
-                            <th>Telefone</th>
-                            <th>Endereço</th>
-                            <th>Pagamento</th>
-                            <th>Entrega</th>
-                            <th>Pedido</th>
-                            <th>Observação</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Ação</th>
-                        </tr>
+                        <thead>
 
-                    </thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Cliente</th>
+                                <th>Telefone</th>
+                                <th>Endereço</th>
+                                <th>Pagamento</th>
+                                <th>Entrega</th>
+                                <th>Pedido</th>
+                                <th>Observação</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Ação</th>
+                            </tr>
 
-                    <tbody></tbody>
+                        </thead>
 
-                </table>
+                        <tbody></tbody>
+
+                    </table>
+
+                </div>
 
             </section>
 
