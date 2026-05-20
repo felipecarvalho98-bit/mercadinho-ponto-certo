@@ -458,6 +458,7 @@ function renderizarPedidos(pedidos) {
                 <td>
                     <select 
                         class="status-select ${classeStatus(pedido.status)}"
+                        data-status-anterior="${pedido.status}"
                         onchange="alterarStatusPedido(${pedido.linha}, this.value)"
                     >
                         <option value="Pendente" ${pedido.status === "Pendente" ? "selected" : ""}>
@@ -507,16 +508,25 @@ function alterarStatusPedido(linha, status) {
 
     const select = event.target;
 
+    const valorAnterior = select.getAttribute("data-status-anterior") || select.value;
+
+    select.disabled = true;
     select.className = `status-select ${classeStatus(status)}`;
+
+    mostrarCarregamentoAdmin("Atualizando status...");
 
     fetch(API_URL, {
 
         method: "POST",
 
         body: JSON.stringify({
+
             tipo: "status",
+
             linha: linha,
+
             status: status
+
         })
 
     })
@@ -524,6 +534,8 @@ function alterarStatusPedido(linha, status) {
     .then(resposta => {
 
         console.log("Status atualizado:", resposta);
+
+        select.setAttribute("data-status-anterior", status);
 
         alert("Status atualizado com sucesso!");
 
@@ -533,7 +545,16 @@ function alterarStatusPedido(linha, status) {
 
         console.error("Erro ao atualizar status:", erro);
 
-        alert("Erro ao atualizar status.");
+        alert("Erro ao atualizar status. Tente novamente.");
+
+        select.value = valorAnterior;
+        select.className = `status-select ${classeStatus(valorAnterior)}`;
+    })
+    .finally(() => {
+
+        select.disabled = false;
+
+        esconderCarregamentoAdmin();
     });
 }
 
@@ -853,4 +874,28 @@ function filtrarPedidosHoje() {
     }
 
     aplicarFiltrosPedidos();
+}
+
+function mostrarCarregamentoAdmin(mensagem = "Atualizando...") {
+
+    const aviso = document.getElementById("avisoAdminCarregamento");
+    const texto = document.getElementById("textoAdminCarregamento");
+
+    if (!aviso || !texto) {
+        return;
+    }
+
+    texto.innerText = mensagem;
+    aviso.style.display = "flex";
+}
+
+function esconderCarregamentoAdmin() {
+
+    const aviso = document.getElementById("avisoAdminCarregamento");
+
+    if (!aviso) {
+        return;
+    }
+
+    aviso.style.display = "none";
 }
