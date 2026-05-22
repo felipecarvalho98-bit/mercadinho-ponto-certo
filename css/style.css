@@ -1667,3 +1667,67 @@ header {
 .link-endereco-loja:hover {
     text-decoration: underline;
 }
+
+/* TABELA DE ALERTA DE ESTOQUE */
+
+.estoque-scroll {
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: white;
+}
+
+#tabelaEstoqueBaixo {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+#tabelaEstoqueBaixo th,
+#tabelaEstoqueBaixo td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e5e5;
+    text-align: left;
+    font-size: 14px;
+    word-break: break-word;
+}
+
+#tabelaEstoqueBaixo th {
+    background: #0047b3;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#tabelaEstoqueBaixo tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.badge-estoque-baixo {
+    display: inline-block;
+    background: #fff3cd;
+    color: #664d03;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.badge-sem-estoque {
+    display: inline-block;
+    background: #f8d7da;
+    color: #842029;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.estoque-ok-tabela {
+    text-align: center !important;
+    background: #d1e7dd;
+    color: #0f5132;
+    font-weight: bold;
+}

@@ -903,13 +903,13 @@ function esconderCarregamentoAdmin() {
 
 function atualizarEstoqueBaixo() {
 
-    const lista = document.getElementById("listaEstoqueBaixo");
+    const tbody = document.querySelector("#tabelaEstoqueBaixo tbody");
 
-    if (!lista) {
+    if (!tbody) {
         return;
     }
 
-    lista.innerHTML = "";
+    tbody.innerHTML = "";
 
     const produtosBaixoEstoque = produtos.filter(produto => {
 
@@ -925,10 +925,12 @@ function atualizarEstoqueBaixo() {
 
     if (produtosBaixoEstoque.length === 0) {
 
-        lista.innerHTML = `
-            <li class="estoque-ok">
-                Nenhum produto com estoque baixo.
-            </li>
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="estoque-ok-tabela">
+                    Nenhum produto com estoque baixo.
+                </td>
+            </tr>
         `;
 
         return;
@@ -936,16 +938,25 @@ function atualizarEstoqueBaixo() {
 
     produtosBaixoEstoque.forEach(produto => {
 
-        lista.innerHTML += `
-            <li class="estoque-alerta">
-                <span>
-                    ${produto.nome}
-                </span>
+        const estoque = Number(produto.estoque);
 
-                <strong>
-                    ${formatarEstoqueAdmin(produto.estoque, produto.tipoVenda)}
-                </strong>
-            </li>
+        let situacao = "Atenção";
+
+        if (estoque <= 0) {
+            situacao = "Sem estoque";
+        }
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${produto.nome}</td>
+                <td>${formatarEstoqueAdmin(produto.estoque, produto.tipoVenda)}</td>
+                <td>${produto.tipoVenda || "-"}</td>
+                <td>
+                    <span class="${estoque <= 0 ? "badge-sem-estoque" : "badge-estoque-baixo"}">
+                        ${situacao}
+                    </span>
+                </td>
+            </tr>
         `;
     });
 }
