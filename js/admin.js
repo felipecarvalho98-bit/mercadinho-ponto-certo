@@ -83,6 +83,7 @@ function carregarProdutos() {
             atualizarTabela([]);
 
             atualizarDashboard(pedidosGlobais);
+            atualizarEstoqueBaixo();
         })
 
         .catch(erro => {
@@ -898,4 +899,53 @@ function esconderCarregamentoAdmin() {
     }
 
     aviso.style.display = "none";
+}
+
+function atualizarEstoqueBaixo() {
+
+    const lista = document.getElementById("listaEstoqueBaixo");
+
+    if (!lista) {
+        return;
+    }
+
+    lista.innerHTML = "";
+
+    const produtosBaixoEstoque = produtos.filter(produto => {
+
+        const estoque = Number(produto.estoque);
+        const tipoVenda = produto.tipoVenda;
+
+        if (tipoVenda === "Peso") {
+            return estoque <= 1;
+        }
+
+        return estoque <= 5;
+    });
+
+    if (produtosBaixoEstoque.length === 0) {
+
+        lista.innerHTML = `
+            <li class="estoque-ok">
+                Nenhum produto com estoque baixo.
+            </li>
+        `;
+
+        return;
+    }
+
+    produtosBaixoEstoque.forEach(produto => {
+
+        lista.innerHTML += `
+            <li class="estoque-alerta">
+                <span>
+                    ${produto.nome}
+                </span>
+
+                <strong>
+                    ${formatarEstoqueAdmin(produto.estoque, produto.tipoVenda)}
+                </strong>
+            </li>
+        `;
+    });
 }

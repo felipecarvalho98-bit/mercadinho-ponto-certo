@@ -482,6 +482,11 @@ function diminuirQuantidade(index) {
 
 function finalizarPedido() {
 
+    if (!verificarLojaAberta()) {
+        alert("A loja está fechada no momento. Faça o pedido dentro do horário de funcionamento.");
+        return;
+    }
+
     const nome = document.getElementById("nome").value;
     const telefone = document.getElementById("telefone").value;
     const endereco = document.getElementById("endereco").value;
@@ -940,6 +945,11 @@ window.addEventListener("scroll", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
     carregarProdutos();
+    atualizarStatusLoja();
+
+    setInterval(() => {
+        atualizarStatusLoja();
+    }, 60000);
 });
 
 function formatarEstoque(estoque, tipoVenda) {
@@ -1068,4 +1078,92 @@ function limparPedidoAposEnvio() {
     if (resumoFixo) {
         resumoFixo.style.display = "none";
     }
+}
+
+function verificarLojaAberta() {
+
+    const agora = new Date();
+
+    const diaSemana = agora.getDay();
+
+    const horaAtual = agora.getHours();
+
+    const minutoAtual = agora.getMinutes();
+
+    const minutosAgora = horaAtual * 60 + minutoAtual;
+
+    const inicioManha = 7 * 60;
+    const fimManha = 12 * 60;
+
+    const inicioTarde = 14 * 60;
+    const fimTarde = (19 * 60) + 30;
+
+    if (diaSemana === 0) {
+        return false;
+    }
+
+    const abertoManha = minutosAgora >= inicioManha && minutosAgora <= fimManha;
+
+    const abertoTarde = minutosAgora >= inicioTarde && minutosAgora <= fimTarde;
+
+    return abertoManha || abertoTarde;
+}
+
+function atualizarStatusLoja() {
+
+    const statusLoja = document.getElementById("statusLoja");
+
+    if (!statusLoja) {
+        return;
+    }
+
+    const lojaAberta = verificarLojaAberta();
+
+    if (lojaAberta) {
+
+        statusLoja.innerHTML = `
+            🟢 Loja aberta agora — você já pode fazer seu pedido.
+        `;
+
+        statusLoja.className = "status-loja loja-aberta";
+
+    } else {
+
+        statusLoja.innerHTML = `
+            🔴 Loja fechada no momento — pedidos podem ser preparados no próximo horário de funcionamento.
+        `;
+
+        statusLoja.className = "status-loja loja-fechada";
+    }
+}
+
+function filtrarProdutos() {
+
+    const busca = normalizarTexto(
+        document.getElementById("campoBusca").value
+    );
+
+    const produtosFiltrados = produtosGlobais.filter(produto => {
+
+        const nomeProduto = normalizarTexto(produto.nome);
+
+        return nomeProduto.includes(busca);
+    });
+
+    renderizarProdutos(produtosFiltrados);
+}
+
+function filtrarCategoria(categoria) {
+
+    let produtosFiltrados = produtosGlobais;
+
+    if (categoria !== "Todos") {
+
+        produtosFiltrados = produtosGlobais.filter(produto => {
+
+            return produto.categoria === categoria;
+        });
+    }
+
+    renderizarProdutos(produtosFiltrados);
 }

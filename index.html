@@ -59,7 +59,33 @@
 
     </section>
 
-        <section class="categorias">
+    <section class="info-loja">
+
+        <div id="statusLoja" class="status-loja">
+            Verificando horário de funcionamento...
+        </div>
+
+        <div class="endereco-loja">
+            <strong>Endereço:</strong><br>
+
+            <a
+                href="https://www.google.com/maps/search/?api=1&query=R.%20Evaristo%20da%20Veiga%2C%20910%20-%20Messejana%2C%20Fortaleza%20-%20CE%2C%2060841-415%2C%20Brasil"
+                target="_blank"
+                class="link-endereco-loja"
+            >
+                R. Evaristo da Veiga, 910 - Messejana, Fortaleza - CE, 60841-415, Brasil
+            </a>
+        </div>
+
+        <div class="horario-loja">
+            <strong>Horário de funcionamento:</strong><br>
+            Segunda a sábado: 07:00 às 12:00 e 14:00 às 19:30<br>
+            Domingo: fechado
+        </div>
+
+    </section>
+
+    <section class="categorias">
 
         <button onclick="filtrarCategoria('Todos')">
             Todos
@@ -85,7 +111,7 @@
             Água/Gás
         </button>
 
-        </section>
+    </section>
 
     <main>
 
@@ -95,9 +121,8 @@
             type="text"
             id="campoBusca"
             placeholder="Buscar produto..."
-            onkeyup="filtrarProdutos()"
-            class="campo-busca"
-        />
+            oninput="filtrarProdutos()"
+        >
 
             <section class="produtos" id="produtos">
             </section>
