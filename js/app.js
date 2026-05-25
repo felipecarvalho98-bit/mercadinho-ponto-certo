@@ -2,7 +2,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92
 
 const NUMERO_WHATSAPP = "558598439003";
 
-const MODO_TESTE = true;
+const MODO_TESTE = false;
 
 let produtosGlobais = [];
 let carrinho = [];
