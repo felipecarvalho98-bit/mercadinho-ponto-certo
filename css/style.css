@@ -1731,3 +1731,12 @@ header {
     color: #0f5132;
     font-weight: bold;
 }
+
+.aviso-modo-teste {
+    background: #fff3cd;
+    color: #664d03;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    border-bottom: 2px solid #ffc107;
+}

@@ -2,6 +2,8 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92
 
 const NUMERO_WHATSAPP = "558598439003";
 
+const MODO_TESTE = true;
+
 let produtosGlobais = [];
 let carrinho = [];
 let dadosPedidoFinal = null;
@@ -487,11 +489,18 @@ function finalizarPedido() {
         return;
     }
 
+    const entrega = document.getElementById("entrega").value;
+
+    if (entrega === "Entrega" && !verificarHorarioEntrega()) {
+        alert("As entregas são realizadas somente até 17h30. Você ainda pode escolher a opção Retirada.");
+        return;
+    }
+
+
     const nome = document.getElementById("nome").value;
     const telefone = document.getElementById("telefone").value;
     const endereco = document.getElementById("endereco").value;
     const pagamento = document.getElementById("pagamento").value;
-    const entrega = document.getElementById("entrega").value;
     const observacao = document.getElementById("observacao").value;
 
     if (carrinho.length === 0) {
@@ -1082,6 +1091,10 @@ function limparPedidoAposEnvio() {
 
 function verificarLojaAberta() {
 
+    if (MODO_TESTE) {
+        return true;
+    }
+
     const agora = new Date();
 
     const diaSemana = agora.getDay();
@@ -1122,7 +1135,8 @@ function atualizarStatusLoja() {
     if (lojaAberta) {
 
         statusLoja.innerHTML = `
-            🟢 Loja aberta agora — você já pode fazer seu pedido.
+            🟢 Loja aberta agora — você já pode fazer seu pedido.<br>
+            Entregas até 17h30. Retirada disponível até o fechamento.
         `;
 
         statusLoja.className = "status-loja loja-aberta";
@@ -1166,4 +1180,30 @@ function filtrarCategoria(categoria) {
     }
 
     renderizarProdutos(produtosFiltrados);
+}
+
+function verificarHorarioEntrega() {
+
+    if (MODO_TESTE) {
+        return true;
+    }
+
+    const agora = new Date();
+
+    const diaSemana = agora.getDay();
+
+    const horaAtual = agora.getHours();
+
+    const minutoAtual = agora.getMinutes();
+
+    const minutosAgora = horaAtual * 60 + minutoAtual;
+
+    const limiteEntrega = (17 * 60) + 30;
+
+    // Domingo não tem entrega
+    if (diaSemana === 0) {
+        return false;
+    }
+
+    return minutosAgora <= limiteEntrega;
 }
