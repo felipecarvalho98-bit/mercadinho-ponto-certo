@@ -405,6 +405,8 @@ function atualizarCarrinho() {
     `;
 
     atualizarResumoFixo(Math.ceil(totalItens), valoresEntrega.totalFinal);
+
+    verificarPagamentoPix();
 }
 
 function calcularValoresEntrega(subtotal) {
@@ -489,6 +491,10 @@ function finalizarPedido() {
         return;
     }
 
+    const nome = document.getElementById("nome").value.trim();
+    const telefone = document.getElementById("telefone").value.trim();
+    const endereco = document.getElementById("endereco").value.trim();
+    const pagamento = document.getElementById("pagamento").value;
     const entrega = document.getElementById("entrega").value;
 
     if (entrega === "Entrega" && !verificarHorarioEntrega()) {
@@ -496,12 +502,20 @@ function finalizarPedido() {
         return;
     }
 
+    let observacao = document.getElementById("observacao").value.trim();
 
-    const nome = document.getElementById("nome").value;
-    const telefone = document.getElementById("telefone").value;
-    const endereco = document.getElementById("endereco").value;
-    const pagamento = document.getElementById("pagamento").value;
-    const observacao = document.getElementById("observacao").value;
+    const troco = document.getElementById("troco")?.value.trim();
+
+    if (pagamento === "Dinheiro" && troco) {
+
+        const textoTroco = `Troco para R$ ${troco}`;
+
+        if (observacao) {
+            observacao = `${textoTroco} - ${observacao}`;
+        } else {
+            observacao = textoTroco;
+        }
+    }
 
     if (carrinho.length === 0) {
         alert("Carrinho vazio!");
@@ -1046,6 +1060,8 @@ function limparPedidoAposEnvio() {
         "endereco",
         "pagamento",
         "entrega",
+        "troco",
+        "entrega",
         "observacao",
         "telefoneBusca"
     ];
@@ -1087,6 +1103,19 @@ function limparPedidoAposEnvio() {
     if (resumoFixo) {
         resumoFixo.style.display = "none";
     }
+
+    const campoTroco = document.getElementById("campoTroco");
+
+    if (campoTroco) {
+        campoTroco.style.display = "none";
+    }
+
+    const selectEntrega = document.getElementById("entrega");
+
+    if (selectEntrega) {
+        selectEntrega.value = "Entrega";
+    }
+
 }
 
 function verificarLojaAberta() {
@@ -1206,4 +1235,147 @@ function verificarHorarioEntrega() {
     }
 
     return minutosAgora <= limiteEntrega;
+}
+
+function verificarPagamentoDinheiro() {
+
+    const pagamento = document.getElementById("pagamento")?.value;
+    const campoTroco = document.getElementById("campoTroco");
+    const troco = document.getElementById("troco");
+
+    if (!campoTroco) {
+        return;
+    }
+
+    if (pagamento === "Dinheiro") {
+
+        campoTroco.style.display = "block";
+
+    } else {
+
+        campoTroco.style.display = "none";
+
+        if (troco) {
+            troco.value = "";
+        }
+    }
+}
+
+function produtoEhGas(produto) {
+
+    const nome = normalizarTexto(produto.nome);
+
+    return nome.includes("gas") || nome.includes("botijao") || nome.includes("botijao de gas");
+}
+
+function carrinhoTemGas() {
+
+    return carrinho.some(produto => {
+        return produtoEhGas(produto);
+    });
+}
+
+function carrinhoTemProdutoSemGas() {
+
+    return carrinho.some(produto => {
+        return !produtoEhGas(produto);
+    });
+}
+
+function verificarPagamentoPix() {
+
+    const pagamento = document.getElementById("pagamento")?.value;
+
+    const areaPix = document.getElementById("areaPix");
+    const pixMercadinho = document.getElementById("pixMercadinho");
+    const pixGas = document.getElementById("pixGas");
+    const avisoPixGas = document.getElementById("avisoPixGas");
+
+    if (!areaPix || !pixMercadinho || !pixGas || !avisoPixGas) {
+        return;
+    }
+
+    if (pagamento !== "Pix") {
+
+        areaPix.style.display = "none";
+        pixMercadinho.style.display = "none";
+        pixGas.style.display = "none";
+        avisoPixGas.style.display = "none";
+
+        return;
+    }
+
+    const temGas = carrinhoTemGas();
+    const temProdutoSemGas = carrinhoTemProdutoSemGas();
+
+    areaPix.style.display = "block";
+
+    pixMercadinho.style.display = "none";
+    pixGas.style.display = "none";
+    avisoPixGas.style.display = "none";
+
+    if (temGas && temProdutoSemGas) {
+
+        pixMercadinho.style.display = "block";
+        pixGas.style.display = "block";
+        avisoPixGas.style.display = "block";
+
+        return;
+    }
+
+    if (temGas) {
+
+        pixGas.style.display = "block";
+        return;
+    }
+
+    pixMercadinho.style.display = "block";
+}
+
+function copiarPix(chavePix) {
+
+    if (navigator.clipboard && window.isSecureContext) {
+
+        navigator.clipboard.writeText(chavePix)
+            .then(() => {
+                alert("Chave Pix copiada: " + chavePix);
+            })
+            .catch(() => {
+                copiarPixModoAlternativo(chavePix);
+            });
+
+    } else {
+
+        copiarPixModoAlternativo(chavePix);
+    }
+}
+
+function copiarPixModoAlternativo(chavePix) {
+
+    const campoTemporario = document.createElement("textarea");
+
+    campoTemporario.value = chavePix;
+
+    campoTemporario.style.position = "fixed";
+    campoTemporario.style.left = "-9999px";
+    campoTemporario.style.top = "-9999px";
+
+    document.body.appendChild(campoTemporario);
+
+    campoTemporario.focus();
+    campoTemporario.select();
+
+    try {
+
+        document.execCommand("copy");
+
+        alert("Chave Pix copiada: " + chavePix);
+
+    } catch (erro) {
+
+        alert("Não foi possível copiar automaticamente. Copie manualmente: " + chavePix);
+
+    }
+
+    document.body.removeChild(campoTemporario);
 }

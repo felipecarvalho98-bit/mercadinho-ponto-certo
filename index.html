@@ -166,11 +166,19 @@
 
                 <div id="areaBuscaCliente" class="area-busca-cliente">
 
+                <div class="campo-telefone-whatsapp">
+
+                    <span class="icone-whatsapp-campo">
+                        <img src="imagens/zap.png" alt="WhatsApp">
+                    </span>
+
                     <input
                         type="text"
                         id="telefoneBusca"
                         placeholder="Digite seu telefone"
                     >
+
+                </div>
 
                     <button
                         type="button"
@@ -184,28 +192,83 @@
 
                 <div id="areaCadastroCliente" class="area-cadastro-cliente">
 
-                    <input type="text" id="nome" placeholder="Seu nome">
+                <input type="text" id="nome" placeholder="Seu nome">
 
-                    <input type="text" id="telefone" placeholder="Telefone">
+                <div class="campo-telefone-whatsapp">
 
-                    <input type="text" id="endereco" placeholder="Endereço">
+                    <span class="icone-whatsapp-campo">
+                        <img src="imagens/zap.png" alt="WhatsApp">
+                    </span>
 
-                    <select id="pagamento" onchange="atualizarCarrinho()">
+                    <input
+                        type="text"
+                        id="telefone"
+                        placeholder="Telefone"
+                    >
+
+                </div>
+
+                <input type="text" id="endereco" placeholder="Endereço">
+
+                    <select id="pagamento" onchange="verificarPagamentoDinheiro(); verificarPagamentoPix(); atualizarCarrinho();">
                         <option value="">Forma de pagamento</option>
                         <option value="Pix">Pix</option>
                         <option value="Dinheiro">Dinheiro</option>
                         <option value="Cartão">Cartão</option>
                     </select>
 
+                    <div id="areaPix" class="area-pix">
+                        <p class="titulo-pix">
+                            Pagamento via Pix
+                        </p>
+
+                        <div id="pixMercadinho" class="box-pix">
+                            <strong>Pix do Mercadinho:</strong>
+                            <span>64382648000152</span>
+
+                            <button type="button" onclick="copiarPix('64382648000152')">
+                                Copiar Pix Mercadinho
+                            </button>
+                        </div>
+
+                        <div id="pixGas" class="box-pix">
+                            <strong>Pix do Gás:</strong>
+                            <span>85996726861</span>
+
+                            <button type="button" onclick="copiarPix('85996726861')">
+                                Copiar Pix do Gás
+                            </button>
+                        </div>
+
+                        <div id="avisoPixGas" class="aviso-pix-gas">
+                            Atenção: produtos de gás devem ser pagos em uma chave Pix separada, pois são administrados fora do mercadinho.
+                        </div>
+                    </div>
+
+                    <div id="campoTroco" class="campo-troco">
+                        <input
+                            type="text"
+                            id="troco"
+                            placeholder="Troco para quanto? (opcional)"
+                        >
+                    </div>
+
+                    <div id="campoTroco" class="campo-troco">
+                        <input
+                            type="text"
+                            id="troco"
+                            placeholder="Troco para quanto? (opcional)"
+                        >
+                    </div>
+
                     <select id="entrega" onchange="atualizarCarrinho()">
-                        <option value="">Entrega ou retirada</option>
                         <option value="Entrega">Entrega</option>
                         <option value="Retirada">Retirada</option>
                     </select>
 
                     <textarea
                         id="observacao"
-                        placeholder="Observação do pedido (opcional)"
+                        placeholder="Observação do pedido (opcional). Ex: deixar na portaria, ponto de referência..."
                         rows="3"
                     ></textarea>
 

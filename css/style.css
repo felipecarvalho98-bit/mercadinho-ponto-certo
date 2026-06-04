@@ -1731,3 +1731,121 @@ header {
     color: #0f5132;
     font-weight: bold;
 }
+
+/* CAMPO DE TROCO */
+
+.campo-troco {
+    display: none;
+    margin-top: 10px;
+}
+
+.campo-troco input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+/* ÁREA PIX */
+
+.area-pix {
+    display: none;
+    background: #f5f7fb;
+    border-left: 5px solid #0047b3;
+    padding: 14px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.titulo-pix {
+    font-weight: bold;
+    color: #0047b3;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.box-pix {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.box-pix strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.box-pix span {
+    display: block;
+    font-weight: bold;
+    color: #0047b3;
+    margin-bottom: 8px;
+}
+
+.box-pix button {
+    background: #0047b3;
+    color: white;
+    margin-top: 5px;
+}
+
+.box-pix button:hover {
+    background: #00368a;
+}
+
+.aviso-pix-gas {
+    display: none;
+    background: #fff3cd;
+    color: #664d03;
+    border-left: 5px solid #ffc107;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+/* CAMPO TELEFONE COM ÍCONE DO WHATSAPP */
+
+.campo-telefone-whatsapp {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+}
+
+.icone-whatsapp-campo {
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.icone-whatsapp-campo img {
+    width: 30px !important;
+    height: 30px !important;
+    object-fit: contain !important;
+    display: block !important;
+}
+
+.campo-telefone-whatsapp input {
+    flex: 1 !important;
+    width: auto !important;
+    height: 52px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+    padding: 0 15px !important;
+    font-size: 16px !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
