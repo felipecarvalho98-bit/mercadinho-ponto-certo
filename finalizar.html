@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Finalizar Pedido - Mercadinho Ponto Certo</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="avisoCarregamento" class="aviso-carregamento">
+        <div class="caixa-carregamento">
+            <div class="spinner-carregamento"></div>
+            <p id="textoCarregamento">Carregando...</p>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-area">
+            <img src="imagens/logo.png" alt="Logo Mercadinho Ponto Certo">
+            <div>
+                <h1>Finalizar Pedido</h1>
+                <p>Confira seus dados antes de enviar</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="info-loja">
+            <div id="statusLoja" class="status-loja">Verificando horário de funcionamento...</div>
+        </section>
+
+        <section class="carrinho">
+            <h2>Resumo do Carrinho</h2>
+            <ul id="lista-carrinho"></ul>
+            <h3 id="total">Subtotal: R$ 0,00</h3>
+            <p id="taxa-entrega">Taxa de entrega: R$ 0,00</p>
+            <h3 id="total-final">Total final: R$ 0,00</h3>
+            <div class="botoes-carrinho">
+                <button class="btn-voltar-produtos" onclick="voltarParaProdutos()">Voltar e editar produtos</button>
+            </div>
+        </section>
+
+        <section class="cliente">
+            <h2>Dados do Cliente</h2>
+
+            <div class="opcoes-cliente">
+                <button type="button" onclick="mostrarBuscaCliente()">Já tenho cadastro</button>
+                <button type="button" onclick="mostrarCadastroCliente()">Novo cadastro</button>
+            </div>
+
+            <div id="areaBuscaCliente" class="area-busca-cliente mostrar">
+                <div class="campo-telefone-whatsapp">
+                    <span class="icone-whatsapp-campo"><img src="imagens/zap.png" alt="WhatsApp"></span>
+                    <input type="text" id="telefoneBusca" placeholder="Digite seu telefone">
+                </div>
+                <button type="button" id="btnBuscarCliente" onclick="buscarCliente()">Buscar cadastro</button>
+            </div>
+
+            <div id="areaCadastroCliente" class="area-cadastro-cliente">
+                <input type="text" id="nome" placeholder="Seu nome">
+                <div class="campo-telefone-whatsapp">
+                    <span class="icone-whatsapp-campo"><img src="imagens/zap.png" alt="WhatsApp"></span>
+                    <input type="text" id="telefone" placeholder="Telefone">
+                </div>
+                <input type="text" id="endereco" placeholder="Endereço">
+
+                <select id="pagamento" onchange="verificarPagamentoDinheiro(); verificarPagamentoPix(); atualizarCarrinho();">
+                    <option value="">Forma de pagamento</option>
+                    <option value="Pix">Pix</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão">Cartão</option>
+                </select>
+
+                <div id="areaPix" class="area-pix">
+                    <p class="titulo-pix">Pagamento via Pix</p>
+                    <div id="pixMercadinho" class="box-pix">
+                        <strong>Pix do Mercadinho:</strong>
+                        <span>64382648000152</span>
+                        <button type="button" onclick="copiarPix('64382648000152')">Copiar Pix Mercadinho</button>
+                    </div>
+                    <div id="pixGas" class="box-pix">
+                        <strong>Pix do Gás:</strong>
+                        <span>85996726861</span>
+                        <button type="button" onclick="copiarPix('85996726861')">Copiar Pix do Gás</button>
+                    </div>
+                    <div id="avisoPixGas" class="aviso-pix-gas">
+                        Atenção: este pedido possui gás e outros produtos. O pagamento por Pix precisa ser feito separado: gás na chave Pix do gás e demais produtos na chave Pix do mercadinho.
+                    </div>
+                </div>
+
+                <div id="campoTroco" class="campo-troco">
+                    <input type="text" id="troco" placeholder="Troco para quanto? (opcional)">
+                </div>
+
+                <select id="entrega" onchange="atualizarCarrinho()">
+                    <option value="Entrega">Entrega</option>
+                    <option value="Retirada">Retirada</option>
+                </select>
+
+                <textarea id="observacao" placeholder="Observação do pedido (opcional). Ex: deixar na portaria, ponto de referência..." rows="3"></textarea>
+
+                <button class="btn-finalizar-principal" onclick="finalizarPedido()">Finalizar Pedido</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="modalConfirmacao" class="modal-confirmacao">
+        <div class="confirmacao-box">
+            <h2>Confirmar Pedido</h2>
+            <div id="resumoPedido"></div>
+            <div class="botoes-confirmacao">
+                <button onclick="confirmarEnvioPedido()">Confirmar</button>
+                <button onclick="fecharConfirmacao()" class="btn-cancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <a href="https://wa.me/558598439003" class="whatsapp-float" target="_blank">
+        <img src="imagens/zap.png" alt="WhatsApp">
+    </a>
+
+    <script src="js/finalizar.js"></script>
+</body>
+</html>

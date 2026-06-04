@@ -1,0 +1,61 @@
+/*
+Complemento para o Google Apps Script do Mercadinho Ponto Certo.
+Adicione estes trechos ao seu Apps Script para o controle manual de funcionamento funcionar para todos os clientes.
+
+1) Crie uma aba na planilha chamada: Configuracoes
+2) Na linha 1, coloque os cabeçalhos: chave | valor
+3) Cole as funções abaixo no Apps Script.
+4) No seu doGet(e), antes de retornar produtos, adicione:
+
+if (e.parameter.tipo === "funcionamento") {
+  return ContentService
+    .createTextOutput(JSON.stringify(obterFuncionamentoLoja()))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+5) No seu doPost(e), dentro do JSON recebido, adicione:
+
+if (dados.tipo === "funcionamento") {
+  salvarFuncionamentoLoja(dados);
+  return ContentService.createTextOutput("sucesso");
+}
+*/
+
+function obterAbaConfiguracoes_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let aba = ss.getSheetByName("Configuracoes");
+  if (!aba) {
+    aba = ss.insertSheet("Configuracoes");
+    aba.appendRow(["chave", "valor"]);
+    aba.appendRow(["modoFuncionamento", "automatico"]);
+    aba.appendRow(["mensagemFuncionamento", ""]);
+  }
+  return aba;
+}
+
+function obterFuncionamentoLoja() {
+  const aba = obterAbaConfiguracoes_();
+  const dados = aba.getDataRange().getValues();
+  let modo = "automatico";
+  let mensagem = "";
+  for (let i = 1; i < dados.length; i++) {
+    if (dados[i][0] === "modoFuncionamento") modo = dados[i][1] || "automatico";
+    if (dados[i][0] === "mensagemFuncionamento") mensagem = dados[i][1] || "";
+  }
+  return { modo: modo, mensagem: mensagem };
+}
+
+function salvarFuncionamentoLoja(dados) {
+  const aba = obterAbaConfiguracoes_();
+  const linhas = aba.getDataRange().getValues();
+  const mapa = {};
+  for (let i = 1; i < linhas.length; i++) {
+    mapa[linhas[i][0]] = i + 1;
+  }
+  const modo = dados.modo || "automatico";
+  const mensagem = dados.mensagem || "";
+  if (mapa["modoFuncionamento"]) aba.getRange(mapa["modoFuncionamento"], 2).setValue(modo);
+  else aba.appendRow(["modoFuncionamento", modo]);
+  if (mapa["mensagemFuncionamento"]) aba.getRange(mapa["mensagemFuncionamento"], 2).setValue(mensagem);
+  else aba.appendRow(["mensagemFuncionamento", mensagem]);
+}

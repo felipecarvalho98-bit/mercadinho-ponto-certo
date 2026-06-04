@@ -1,0 +1,31 @@
+Mercadinho Ponto Certo - versão corrigida
+
+Ajustes desta versão:
+1. Botões do carrinho corrigidos: Finalizar Pedido, Limpar Carrinho e Voltar e editar produtos agora ficam grandes e legíveis.
+2. Busca da tabela de produtos do admin corrigida: agora aceita gas, gás, ga, agua, água, nome, código e categoria.
+3. Funcionamento manual corrigido com salvamento local imediato:
+   - Automático pelo horário normal
+   - Forçar loja aberta
+   - Forçar loja fechada
+
+Importante sobre o funcionamento manual:
+- No seu computador, o fechamento/abertura manual já reflete pelo localStorage.
+- Para refletir para todos os clientes, você precisa atualizar o Apps Script com o arquivo:
+  backend/apps-script-funcionamento.txt
+- Depois de colar o código no Apps Script, publique uma nova versão da implantação.
+
+Sobre a barra que aparece embaixo com texto como queijo:
+- Isso parece ser a barra de localizar do navegador, não é do site.
+- Pressione ESC ou feche a barra de pesquisa do navegador.
+
+Como atualizar o projeto:
+1. Substitua index.html, finalizar.html e admin.html na raiz.
+2. Substitua css/style.css.
+3. Substitua js/app.js, js/finalizar.js e js/admin.js.
+4. Mantenha a pasta imagens com logo.png e zap.png.
+5. Teste com CTRL + F5.
+
+Depois envie para o GitHub:
+git add .
+git commit -m "Corrige finalizacao busca admin e funcionamento manual"
+git push

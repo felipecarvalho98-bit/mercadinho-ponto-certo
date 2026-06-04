@@ -1,962 +1,290 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbx3pylS99g9z3hbY3RYna92EvgyFx4ko3aWC7nxaoWnI-Vh0zxvM5xujbGrIkqYn04Y/exec";
-
+const NUMERO_WHATSAPP = "558598439003";
 let produtos = [];
 let pedidosGlobais = [];
 let produtoEditando = null;
+let funcionamentoAtual = { modo: "automatico", mensagem: "" };
 
-function fazerLogin() {
-
-    const usuario = document.getElementById("usuarioAdmin").value;
-    const senha = document.getElementById("senhaAdmin").value;
-
-    if (usuario === "admin" && senha === "1234") {
-
-        document.getElementById("loginAdmin").style.display = "none";
+function entrarAdmin() {
+    const senha = document.getElementById("senha").value;
+    const lembrarSenha = document.getElementById("lembrarSenha")?.checked;
+    const senhaCorreta = "1234";
+    if (senha === senhaCorreta) {
+        if (lembrarSenha) localStorage.setItem("adminLogado", "sim");
+        document.getElementById("telaLogin").style.display = "none";
         document.getElementById("painelAdmin").style.display = "block";
-
-        mostrarAbaAdmin("dashboard");
-
-        carregarProdutos();
-        carregarPedidos();
-
-    } else {
-
-        alert("Usuário ou senha inválidos");
-    }
+        inicializarAdmin();
+    } else alert("Senha incorreta.");
 }
+function sairAdmin() { localStorage.removeItem("adminLogado"); location.reload(); }
+function inicializarAdmin() { carregarProdutos(); carregarPedidos(); carregarFuncionamentoLojaAdmin(); }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const telaLogin = document.getElementById("telaLogin");
+    const painelAdmin = document.getElementById("painelAdmin");
+    if (localStorage.getItem("adminLogado") === "sim") {
+        if (telaLogin) telaLogin.style.display = "none";
+        if (painelAdmin) painelAdmin.style.display = "block";
+        inicializarAdmin();
+    } else {
+        if (telaLogin) telaLogin.style.display = "flex";
+        if (painelAdmin) painelAdmin.style.display = "none";
+    }
+});
 
 function mostrarAbaAdmin(aba) {
-
-    const abaDashboard = document.getElementById("abaDashboard");
-    const abaPedidos = document.getElementById("abaPedidos");
-    const abaProdutos = document.getElementById("abaProdutos");
-
-    if (abaDashboard) {
-        abaDashboard.style.display = "none";
-    }
-
-    if (abaPedidos) {
-        abaPedidos.style.display = "none";
-    }
-
-    if (abaProdutos) {
-        abaProdutos.style.display = "none";
-    }
-
-    if (aba === "dashboard" && abaDashboard) {
-        abaDashboard.style.display = "block";
-    }
-
-    if (aba === "pedidos" && abaPedidos) {
-        abaPedidos.style.display = "block";
-    }
-
-    if (aba === "produtos" && abaProdutos) {
-        abaProdutos.style.display = "block";
-    }
-
-    const botoes = document.querySelectorAll(".abas-admin button");
-
-    botoes.forEach(botao => {
-        botao.classList.remove("aba-ativa");
+    ["Dashboard","Pedidos","Produtos","Funcionamento"].forEach(nome => {
+        const el = document.getElementById(`aba${nome}`);
+        if (el) el.style.display = "none";
     });
-
-    const botaoSelecionado = document.querySelector(
-        `.abas-admin button[data-aba="${aba}"]`
-    );
-
-    if (botaoSelecionado) {
-        botaoSelecionado.classList.add("aba-ativa");
-    }
+    const mapa = { dashboard:"abaDashboard", pedidos:"abaPedidos", produtos:"abaProdutos", funcionamento:"abaFuncionamento" };
+    const alvo = document.getElementById(mapa[aba]);
+    if (alvo) alvo.style.display = "block";
+    document.querySelectorAll(".abas-admin button").forEach(b => b.classList.remove("aba-ativa"));
+    const btn = document.querySelector(`.abas-admin button[data-aba="${aba}"]`);
+    if (btn) btn.classList.add("aba-ativa");
 }
+
+function mostrarCarregamentoAdmin(texto="Atualizando...") {
+    const box=document.getElementById("carregamentoAdmin"); const p=document.getElementById("textoCarregamentoAdmin");
+    if(p) p.innerText=texto; if(box) box.style.display="flex";
+}
+function esconderCarregamentoAdmin() { const box=document.getElementById("carregamentoAdmin"); if(box) box.style.display="none"; }
 
 function carregarProdutos() {
-
-    fetch(API_URL)
-
-        .then(resposta => resposta.json())
-
-        .then(produtosRecebidos => {
-
-            produtos = produtosRecebidos;
-
-            atualizarTabela([]);
-
-            atualizarDashboard(pedidosGlobais);
-            atualizarEstoqueBaixo();
-        })
-
-        .catch(erro => {
-
-            console.error("Erro ao carregar produtos:", erro);
-
-            alert("Erro ao carregar produtos.");
-        });
+    fetch(`${API_URL}?t=${Date.now()}`).then(r=>r.json()).then(dados=>{
+        produtos = Array.isArray(dados) ? dados : [];
+        renderizarTabelaProdutos(produtos);
+        atualizarDashboard(pedidosGlobais);
+        atualizarEstoqueBaixo();
+    }).catch(erro=>{ console.error("Erro ao carregar produtos:", erro); alert("Erro ao carregar produtos."); });
 }
-
 function cadastrarProduto() {
-
-    const nome = document.getElementById("produtoNome").value.trim();
-    const preco = document.getElementById("produtoPreco").value.trim();
-    const estoque = document.getElementById("produtoEstoque").value.trim();
-    const imagem = document.getElementById("produtoImagem").value.trim();
-    const codigo = document.getElementById("produtoCodigo").value.trim();
-    const categoria = document.getElementById("produtoCategoria").value;
-    const tipoVenda = document.getElementById("produtoTipoVenda").value;
-
-    if (!nome || !preco || !estoque || !imagem || !categoria || !codigo || !tipoVenda) {
-        alert("Preencha todos os campos do produto!");
-        return;
-    }
-
-    const produtoNovo = {
-        nome,
-        preco,
-        estoque,
-        imagem,
-        categoria,
-        codigo,
-        tipoVenda
-    };
-
-    if (produtoEditando) {
-
-        const confirmarEdicao = confirm(
-            `Deseja salvar as alterações do produto "${produtoEditando}"?`
-        );
-
-        if (!confirmarEdicao) {
-            return;
-        }
-
-        produtos = produtos.filter(produto => {
-            return produto.nome !== produtoEditando;
-        });
-
-        produtos.push(produtoNovo);
-
-        fetch(API_URL, {
-
-            method: "POST",
-
-            body: JSON.stringify({
-                tipo: "excluir",
-                nome: produtoEditando
-            })
-
-        })
-        .then(() => {
-
-            return fetch(API_URL, {
-
-                method: "POST",
-
-                body: JSON.stringify({
-                    tipo: "produto",
-                    nome,
-                    preco,
-                    estoque,
-                    imagem,
-                    categoria,
-                    codigo,
-                    tipoVenda
-                })
-            });
-        })
-        .then(() => {
-
-            alert("Produto editado com sucesso!");
-
-            produtoEditando = null;
-
-            limparCampos();
-
-            atualizarTabela([]);
-
-            atualizarDashboard(pedidosGlobais);
-        })
-        .catch(erro => {
-
-            console.error("Erro ao editar produto:", erro);
-
-            alert("Erro ao editar produto.");
-        });
-
-        return;
-    }
-
-    produtos.push(produtoNovo);
-
-    atualizarTabela([]);
-
-    atualizarDashboard(pedidosGlobais);
-
-    fetch(API_URL, {
-
-        method: "POST",
-
-        body: JSON.stringify({
-            tipo: "produto",
-            nome,
-            preco,
-            estoque,
-            imagem,
-            categoria,
-            codigo,
-            tipoVenda
-        })
-
-    })
-    .then(() => {
-
-        alert("Produto cadastrado com sucesso!");
-
-        limparCampos();
-    })
-    .catch(erro => {
-
-        console.error("Erro ao cadastrar produto:", erro);
-
-        alert("Erro ao cadastrar produto.");
-    });
+    const nome=document.getElementById("produtoNome").value.trim();
+    const preco=document.getElementById("produtoPreco").value.trim();
+    const estoque=document.getElementById("produtoEstoque").value.trim();
+    const imagem=document.getElementById("produtoImagem").value.trim();
+    const codigo=document.getElementById("produtoCodigo").value.trim();
+    const categoria=document.getElementById("produtoCategoria").value;
+    const tipoVenda=document.getElementById("produtoTipoVenda").value;
+    if(!nome || !preco || !estoque || !imagem || !categoria || !codigo || !tipoVenda) return alert("Preencha todos os campos do produto!");
+    const salvar = () => fetch(API_URL, { method:"POST", body:JSON.stringify({ tipo:"produto", nome, preco, estoque, imagem, categoria, codigo, tipoVenda }) });
+    mostrarCarregamentoAdmin("Salvando produto...");
+    const operacao = produtoEditando ? fetch(API_URL, { method:"POST", body:JSON.stringify({ tipo:"excluir", nome:produtoEditando }) }).then(salvar) : salvar();
+    operacao.then(()=>{ alert(produtoEditando ? "Produto editado com sucesso!" : "Produto cadastrado com sucesso!"); produtoEditando=null; limparCampos(); carregarProdutos(); })
+        .catch(err=>{ console.error(err); alert("Erro ao salvar produto."); })
+        .finally(esconderCarregamentoAdmin);
 }
-
-function atualizarTabela(listaProdutos = produtos) {
-
-    const tbody = document.querySelector("#tabelaProdutos tbody");
-    const areaTabela = document.getElementById("areaTabelaProdutos");
-
-    if (!tbody || !areaTabela) {
-        return;
-    }
-
-    tbody.innerHTML = "";
-
-    if (listaProdutos.length === 0) {
-        areaTabela.style.display = "none";
-        return;
-    }
-
-    areaTabela.style.display = "block";
-
-    listaProdutos.forEach(produto => {
-
-        tbody.innerHTML += `
-
-            <tr>
-
-                <td>${produto.nome}</td>
-
-                <td>R$ ${Number(produto.preco).toFixed(2)}</td>
-
-                <td>${formatarEstoqueAdmin(produto.estoque, produto.tipoVenda)}</td>
-
-                <td>${produto.codigo || "-"}</td>
-
-                <td>${produto.tipoVenda || "-"}</td>
-
-                <td>
-
-                    <button onclick="editarProduto('${produto.nome}')">
-                        Editar
-                    </button>
-
-                    <button onclick="excluirProduto('${produto.nome}')">
-                        Excluir
-                    </button>
-
-                </td>
-
-            </tr>
-
-        `;
-    });
-}
-
-function buscarProdutoAdmin() {
-
-    const termo = document
-        .getElementById("campoBuscaProdutoAdmin")
-        .value
-        .trim()
-        .toLowerCase();
-
-    if (!termo) {
-        alert("Digite o nome ou código do produto.");
-        return;
-    }
-
-    const produtosFiltrados = produtos.filter(produto => {
-
-        const nome = String(produto.nome || "").toLowerCase();
-        const codigo = String(produto.codigo || "").toLowerCase();
-
-        return nome.includes(termo) || codigo.includes(termo);
-    });
-
-    if (produtosFiltrados.length === 0) {
-
-        alert("Produto não encontrado.");
-
-        atualizarTabela([]);
-
-        return;
-    }
-
-    atualizarTabela(produtosFiltrados);
-}
-
-function limparBuscaProdutoAdmin() {
-
-    document.getElementById("campoBuscaProdutoAdmin").value = "";
-
-    atualizarTabela([]);
-}
-
-function limparCampos() {
-
-    document.getElementById("produtoNome").value = "";
-    document.getElementById("produtoPreco").value = "";
-    document.getElementById("produtoEstoque").value = "";
-    document.getElementById("produtoImagem").value = "";
-    document.getElementById("produtoCodigo").value = "";
-    document.getElementById("produtoCategoria").value = "";
-    document.getElementById("produtoTipoVenda").value = "";
-
-    produtoEditando = null;
-}
-
+function limparCampos() { ["produtoNome","produtoPreco","produtoEstoque","produtoImagem","produtoCodigo","produtoCategoria","produtoTipoVenda"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; }); produtoEditando=null; }
 function excluirProduto(nome) {
-
-    const confirmar = confirm(
-        `Tem certeza que deseja excluir o produto "${nome}"? Essa ação não poderá ser desfeita.`
-    );
-
-    if (!confirmar) {
-        return;
-    }
-
-    produtos = produtos.filter(produto => produto.nome !== nome);
-
-    atualizarTabela([]);
-
-    atualizarDashboard(pedidosGlobais);
-
-    fetch(API_URL, {
-
-        method: "POST",
-
-        body: JSON.stringify({
-            tipo: "excluir",
-            nome: nome
-        })
-
-    })
-    .then(() => {
-
-        alert("Produto excluído com sucesso.");
-    })
-    .catch(erro => {
-
-        console.error("Erro ao excluir produto:", erro);
-
-        alert("Erro ao excluir produto.");
-    });
+    if(!confirm(`Tem certeza que deseja excluir o produto "${nome}"?`)) return;
+    mostrarCarregamentoAdmin("Excluindo produto...");
+    fetch(API_URL, { method:"POST", body:JSON.stringify({ tipo:"excluir", nome }) })
+        .then(()=>{ alert("Produto excluído com sucesso."); carregarProdutos(); })
+        .catch(err=>{ console.error(err); alert("Erro ao excluir produto."); })
+        .finally(esconderCarregamentoAdmin);
 }
-
 function editarProduto(nome) {
+    const produto=produtos.find(p=>p.nome===nome);
+    if(!produto) return alert("Produto não encontrado.");
+    produtoEditando=nome;
+    document.getElementById("produtoNome").value=produto.nome || "";
+    document.getElementById("produtoPreco").value=produto.preco || "";
+    document.getElementById("produtoEstoque").value=produto.estoque || "";
+    document.getElementById("produtoImagem").value=produto.imagem || "";
+    document.getElementById("produtoCodigo").value=produto.codigo || "";
+    document.getElementById("produtoCategoria").value=produto.categoria || "";
+    document.getElementById("produtoTipoVenda").value=produto.tipoVenda || "Unidade";
+    mostrarAbaAdmin("produtos"); window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderizarTabelaProdutos(listaProdutos=produtos) {
+    const tbody=document.querySelector("#tabelaProdutosCadastrados tbody"); if(!tbody) return;
+    tbody.innerHTML="";
+    if(!listaProdutos || listaProdutos.length===0) { tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;font-weight:bold;">Nenhum produto encontrado.</td></tr>`; return; }
+    listaProdutos.forEach(produto=>{
+        const preco=Number(produto.preco || 0); const estoque=Number(produto.estoque || 0); const tipoTexto=produto.tipoVenda==="Peso" ? "Peso" : "Quantidade";
+        tbody.innerHTML += `<tr><td>${produto.nome || "-"}</td><td>R$ ${preco.toFixed(2)}</td><td>${formatarEstoqueAdmin(estoque, produto.tipoVenda)}</td><td>${nomeCategoria(produto.categoria)}</td><td>${tipoTexto}</td><td><button onclick="editarProduto('${String(produto.nome).replace(/'/g,"\'")}')">Editar</button><button onclick="excluirProduto('${String(produto.nome).replace(/'/g,"\'")}')" class="btn-excluir-produto">Excluir</button></td></tr>`;
+    });
+}
+function filtrarProdutosCadastrados() {
+    const campoBusca = document.getElementById("campoBuscaProdutoAdmin");
+    const busca = normalizarTextoAdmin(campoBusca?.value || "");
 
-    const produto = produtos.find(p => p.nome === nome);
-
-    if (!produto) {
-        alert("Produto não encontrado.");
+    if (!busca) {
+        renderizarTabelaProdutos(produtos);
         return;
     }
 
-    produtoEditando = nome;
+    const filtrados = produtos.filter(produto => {
+        const textoCompleto = normalizarTextoAdmin([
+            produto.nome,
+            produto.codigo,
+            produto.codigoBarras,
+            produto.categoria,
+            nomeCategoria(produto.categoria),
+            produto.tipoVenda
+        ].join(" "));
 
-    document.getElementById("produtoNome").value = produto.nome;
-    document.getElementById("produtoPreco").value = produto.preco;
-    document.getElementById("produtoEstoque").value = produto.estoque;
-    document.getElementById("produtoImagem").value = produto.imagem;
-    document.getElementById("produtoCodigo").value = produto.codigo || "";
-    document.getElementById("produtoCategoria").value = produto.categoria || "";
-    document.getElementById("produtoTipoVenda").value = produto.tipoVenda || "";
+        const ehGas = produtoEhGasAdmin(produto);
 
-    mostrarAbaAdmin("produtos");
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
+        return (
+            textoCompleto.includes(busca) ||
+            (busca.includes("gas") && ehGas) ||
+            (busca === "ga" && (textoCompleto.includes("agua") || ehGas))
+        );
     });
 
-    alert("Edite os dados e clique em Salvar Produto.");
+    renderizarTabelaProdutos(filtrados);
 }
+function limparBuscaProdutoAdmin() { document.getElementById("campoBuscaProdutoAdmin").value=""; renderizarTabelaProdutos(produtos); }
 
 function carregarPedidos() {
+    mostrarCarregamentoAdmin("Carregando pedidos...");
+    fetch(`${API_URL}?tipo=pedidos&t=${Date.now()}`).then(r=>r.json()).then(pedidos=>{
+        pedidosGlobais = Array.isArray(pedidos) ? pedidos : [];
+        renderizarPedidos([...pedidosGlobais]);
+        atualizarDashboard(pedidosGlobais); atualizarProdutosMaisVendidos(pedidosGlobais);
+    }).catch(err=>{ console.error(err); alert("Erro ao carregar pedidos."); }).finally(esconderCarregamentoAdmin);
+}
+function renderizarPedidos(pedidos) {
+    const tbody=document.querySelector("#tabelaPedidos tbody"); if(!tbody) return; tbody.innerHTML="";
+    const ordenados=[...pedidos].sort((a,b)=> new Date(a.data) - new Date(b.data));
+    ordenados.forEach(pedido=>{
+        tbody.innerHTML += `<tr><td>${formatarDataHora(pedido.data)}</td><td>${pedido.nome || "-"}</td><td>${pedido.telefone || "-"}</td><td>${pedido.endereco || "-"}</td><td>${pedido.pagamento || "-"}</td><td>${pedido.entrega || "-"}</td><td>${formatarPedido(pedido.pedido)}</td><td>${pedido.observacao || "-"}</td><td>R$ ${Number(pedido.total || 0).toFixed(2)}</td><td><select class="status-select ${classeStatus(pedido.status)}" data-status-anterior="${pedido.status}" onchange="alterarStatusPedido(${pedido.linha}, this.value, this)"><option value="Pendente" ${pedido.status==="Pendente"?"selected":""}>Pendente</option><option value="Em separação" ${pedido.status==="Em separação"?"selected":""}>Em separação</option><option value="Saiu para entrega" ${pedido.status==="Saiu para entrega"?"selected":""}>Saiu para entrega</option><option value="Concluído" ${pedido.status==="Concluído"?"selected":""}>Concluído</option><option value="Cancelado" ${pedido.status==="Cancelado"?"selected":""}>Cancelado</option></select></td><td>${pedido.status==="Saiu para entrega" ? `<button class="btn-avisar-cliente" onclick="avisarClienteWhatsApp('${pedido.nome}','${pedido.telefone}')">Avisar cliente</button>` : "-"}</td></tr>`;
+    });
+}
+function alterarStatusPedido(linha,status,select) {
+    const valorAnterior=select.getAttribute("data-status-anterior") || select.value;
+    select.disabled=true; select.className=`status-select ${classeStatus(status)}`; mostrarCarregamentoAdmin("Atualizando status...");
+    fetch(API_URL, { method:"POST", body:JSON.stringify({ tipo:"status", linha, status }) })
+        .then(r=>r.text()).then(()=>{ select.setAttribute("data-status-anterior",status); alert("Status atualizado com sucesso!"); carregarPedidos(); })
+        .catch(err=>{ console.error(err); alert("Erro ao atualizar status."); select.value=valorAnterior; select.className=`status-select ${classeStatus(valorAnterior)}`; })
+        .finally(()=>{ select.disabled=false; esconderCarregamentoAdmin(); });
+}
+function aplicarFiltrosPedidos() {
+    const mes=document.getElementById("filtroMes")?.value;
+    const dia=document.getElementById("filtroDia")?.value;
+    const status=document.getElementById("filtroStatus")?.value || "Todos";
+    let lista=[...pedidosGlobais];
+    if(mes) lista=lista.filter(p=>formatarDataInput(p.data).startsWith(mes));
+    if(dia) lista=lista.filter(p=>formatarDataInput(p.data)===dia);
+    if(status!=="Todos") lista=lista.filter(p=>p.status===status);
+    renderizarPedidos(lista); atualizarDashboard(lista); atualizarProdutosMaisVendidos(lista);
+}
+function limparFiltrosPedidos() { document.getElementById("filtroMes").value=""; document.getElementById("filtroDia").value=""; document.getElementById("filtroStatus").value="Todos"; renderizarPedidos(pedidosGlobais); atualizarDashboard(pedidosGlobais); atualizarProdutosMaisVendidos(pedidosGlobais); }
+function filtrarPedidosHoje() { const hoje=new Date().toISOString().slice(0,10); document.getElementById("filtroDia").value=hoje; document.getElementById("filtroMes").value=""; aplicarFiltrosPedidos(); }
 
-    fetch(`${API_URL}?tipo=pedidos`)
+function atualizarDashboard(pedidos=[]) {
+    const totalProdutos=produtos.length, totalPedidos=pedidos.length;
+    const pendentes=pedidos.filter(p=>p.status==="Pendente").length;
+    const concluidos=pedidos.filter(p=>p.status==="Concluído").length;
+    let vendas=0;
+    pedidos.forEach(p=>{ if(p.status==="Concluído") { const v=Number(String(p.total||"0").replace("R$","").replace(",",".").trim()); if(!isNaN(v)) vendas+=v; } });
+    setText("totalProdutos", totalProdutos); setText("totalPedidos", totalPedidos); setText("pedidosPendentes", pendentes); setText("pedidosConcluidos", concluidos); setText("vendasMes", `R$ ${vendas.toFixed(2)}`);
+}
+function setText(id,valor){ const el=document.getElementById(id); if(el) el.innerText=valor; }
+function atualizarProdutosMaisVendidos(pedidos=[]) {
+    const ul=document.getElementById("listaMaisVendidos"); if(!ul) return; const ranking={};
+    pedidos.forEach(p=>{ if(p.status!=="Concluído" || !p.pedido) return; p.pedido.split(",").forEach(item=>{ const nome=item.split(" x")[0].trim(); const qtdTexto=(item.match(/x([0-9.,]+)/)||[])[1] || "1"; const qtd=Number(qtdTexto.replace(",",".")) || 1; ranking[nome]=(ranking[nome]||0)+qtd; }); });
+    const ordenado=Object.entries(ranking).sort((a,b)=>b[1]-a[1]).slice(0,10); ul.innerHTML=ordenado.length ? ordenado.map(([n,q],i)=>`<li><span>${i+1}. ${n}</span><strong>${q} unidade(s)</strong></li>`).join("") : `<li>Nenhuma venda concluída no filtro atual.</li>`;
+}
+function atualizarEstoqueBaixo() {
+    const tbody=document.querySelector("#tabelaEstoqueBaixo tbody"); if(!tbody) return; tbody.innerHTML="";
+    const baixos=produtos.filter(p=>{ const e=Number(p.estoque||0); return p.tipoVenda==="Peso" ? e <= 2 : e <= 5; });
+    if(!baixos.length) { tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;font-weight:bold;">Nenhum produto com estoque baixo.</td></tr>`; return; }
+    baixos.forEach(p=> tbody.innerHTML += `<tr><td>${p.nome}</td><td>${formatarEstoqueAdmin(p.estoque,p.tipoVenda)}</td><td>${p.tipoVenda==="Peso"?"Peso":"Quantidade"}</td><td>Estoque acabando</td></tr>`);
+}
 
-        .then(resposta => resposta.json())
+function carregarFuncionamentoLojaAdmin() {
+    const salvoLocal = carregarFuncionamentoLocalAdmin();
 
-        .then(pedidos => {
-
-            pedidosGlobais = pedidos;
-
-            atualizarDashboard(pedidos);
-
-            atualizarProdutosMaisVendidos(pedidos);
-
-            renderizarPedidos([...pedidos]);
+    fetch(`${API_URL}?tipo=funcionamento&t=${Date.now()}`)
+        .then(r => r.json())
+        .then(dados => {
+            if (dados && dados.modo) {
+                funcionamentoAtual = dados;
+                salvarFuncionamentoLocalAdmin(dados.modo, dados.mensagem || "");
+            } else if (salvoLocal) {
+                funcionamentoAtual = salvoLocal;
+            }
+            atualizarTelaFuncionamento();
         })
-
-        .catch(erro => {
-
-            console.error("Erro ao carregar pedidos:", erro);
-
-            alert("Erro ao carregar pedidos.");
+        .catch(() => {
+            funcionamentoAtual = salvoLocal || { modo: "automatico", mensagem: "" };
+            atualizarTelaFuncionamento("Usando configuração salva neste computador. Para funcionar para todos os clientes, atualize o Apps Script.");
         });
 }
-
-function renderizarPedidos(pedidos) {
-
-    const tbody = document.querySelector("#tabelaPedidos tbody");
-
-    if (!tbody) {
-        return;
-    }
-
-    tbody.innerHTML = "";
-
-    const pedidosOrdenados = [...pedidos].sort((a, b) => {
-        return new Date(a.data) - new Date(b.data);
-    });
-
-    pedidosOrdenados.forEach(pedido => {
-
-        tbody.innerHTML += `
-
-            <tr>
-
-                <td>${formatarDataHora(pedido.data)}</td>
-
-                <td>${pedido.nome}</td>
-
-                <td>${pedido.telefone}</td>
-
-                <td>${pedido.endereco}</td>
-
-                <td>${pedido.pagamento}</td>
-
-                <td>${pedido.entrega}</td>
-
-                <td>${formatarPedido(pedido.pedido)}</td>
-
-                <td>${pedido.observacao || "-"}</td>
-
-                <td>R$ ${Number(pedido.total).toFixed(2)}</td>
-
-                <td>
-                    <select 
-                        class="status-select ${classeStatus(pedido.status)}"
-                        data-status-anterior="${pedido.status}"
-                        onchange="alterarStatusPedido(${pedido.linha}, this.value)"
-                    >
-                        <option value="Pendente" ${pedido.status === "Pendente" ? "selected" : ""}>
-                            Pendente
-                        </option>
-
-                        <option value="Em separação" ${pedido.status === "Em separação" ? "selected" : ""}>
-                            Em separação
-                        </option>
-
-                        <option value="Saiu para entrega" ${pedido.status === "Saiu para entrega" ? "selected" : ""}>
-                            Saiu para entrega
-                        </option>
-
-                        <option value="Concluído" ${pedido.status === "Concluído" ? "selected" : ""}>
-                            Concluído
-                        </option>
-
-                        <option value="Cancelado" ${pedido.status === "Cancelado" ? "selected" : ""}>
-                            Cancelado
-                        </option>
-                    </select>
-                </td>
-
-                <td>
-                    ${
-                        pedido.status === "Saiu para entrega"
-                        ? `
-                            <button 
-                                class="btn-avisar-cliente"
-                                onclick="avisarClienteWhatsApp('${pedido.nome}', '${pedido.telefone}')"
-                            >
-                                Avisar cliente
-                            </button>
-                        `
-                        : "-"
-                    }
-                </td>
-
-            </tr>
-
-        `;
-    });
+function atualizarTelaFuncionamento(aviso="") {
+    const radio=document.querySelector(`input[name="modoFuncionamento"][value="${funcionamentoAtual.modo || "automatico"}"]`); if(radio) radio.checked=true;
+    const msg=document.getElementById("mensagemFuncionamento"); if(msg) msg.value=funcionamentoAtual.mensagem || "";
+    const st=document.getElementById("statusFuncionamentoAdmin"); if(st) st.innerHTML=`Modo atual: <strong>${funcionamentoAtual.modo || "automatico"}</strong>${funcionamentoAtual.mensagem ? `<br>Mensagem: ${funcionamentoAtual.mensagem}` : ""}${aviso ? `<br>${aviso}` : ""}`;
 }
+function salvarFuncionamentoLoja() {
+    const modo = document.querySelector('input[name="modoFuncionamento"]:checked')?.value || "automatico";
+    const mensagem = document.getElementById("mensagemFuncionamento")?.value.trim() || "";
 
-function alterarStatusPedido(linha, status) {
+    funcionamentoAtual = { modo, mensagem };
+    salvarFuncionamentoLocalAdmin(modo, mensagem);
+    atualizarTelaFuncionamento("Configuração salva localmente neste computador.");
 
-    const select = event.target;
-
-    const valorAnterior = select.getAttribute("data-status-anterior") || select.value;
-
-    select.disabled = true;
-    select.className = `status-select ${classeStatus(status)}`;
-
-    mostrarCarregamentoAdmin("Atualizando status...");
+    mostrarCarregamentoAdmin("Salvando funcionamento...");
 
     fetch(API_URL, {
-
         method: "POST",
-
-        body: JSON.stringify({
-
-            tipo: "status",
-
-            linha: linha,
-
-            status: status
-
-        })
-
+        body: JSON.stringify({ tipo: "funcionamento", modo, mensagem })
     })
-    .then(resposta => resposta.text())
-    .then(resposta => {
-
-        console.log("Status atualizado:", resposta);
-
-        select.setAttribute("data-status-anterior", status);
-
-        alert("Status atualizado com sucesso!");
-
-        carregarPedidos();
+    .then(r => r.text())
+    .then(txt => {
+        console.log("Funcionamento salvo no Apps Script:", txt);
+        alert("Funcionamento salvo. Abra ou atualize o site do cliente para conferir.");
+        atualizarTelaFuncionamento();
     })
-    .catch(erro => {
-
-        console.error("Erro ao atualizar status:", erro);
-
-        alert("Erro ao atualizar status. Tente novamente.");
-
-        select.value = valorAnterior;
-        select.className = `status-select ${classeStatus(valorAnterior)}`;
+    .catch(err => {
+        console.error(err);
+        alert("Funcionamento salvo neste computador, mas não foi salvo no Apps Script. Para valer para todos os clientes, atualize o Apps Script.");
     })
-    .finally(() => {
-
-        select.disabled = false;
-
-        esconderCarregamentoAdmin();
-    });
+    .finally(esconderCarregamentoAdmin);
 }
 
-function atualizarDashboard(pedidos = []) {
+function salvarFuncionamentoLocalAdmin(modo, mensagem) {
+    localStorage.setItem("funcionamentoLojaMercadinho", JSON.stringify({
+        modo: modo || "automatico",
+        mensagem: mensagem || ""
+    }));
+}
 
-    const totalProdutos = produtos.length;
-    const totalPedidos = pedidos.length;
-
-    const pedidosPendentes = pedidos.filter(pedido => {
-        return pedido.status === "Pendente";
-    }).length;
-
-    const pedidosConcluidos = pedidos.filter(pedido => {
-        return pedido.status === "Concluído";
-    }).length;
-
-    const hoje = new Date();
-    const mesAtual = hoje.getMonth();
-    const anoAtual = hoje.getFullYear();
-
-    let vendasMes = 0;
-
-    pedidos.forEach(pedido => {
-
-        const dataPedido = new Date(pedido.data);
-
-        const mesmoMes = dataPedido.getMonth() === mesAtual;
-        const mesmoAno = dataPedido.getFullYear() === anoAtual;
-
-        if (
-            pedido.status === "Concluído"
-            &&
-            mesmoMes
-            &&
-            mesmoAno
-        ) {
-
-            vendasMes += Number(pedido.total);
-        }
-    });
-
-    const totalProdutosElemento = document.getElementById("totalProdutos");
-    const totalPedidosElemento = document.getElementById("totalPedidos");
-    const pedidosPendentesElemento = document.getElementById("pedidosPendentes");
-    const pedidosConcluidosElemento = document.getElementById("pedidosConcluidos");
-    const vendasMesElemento = document.getElementById("vendasMes");
-
-    if (totalProdutosElemento) {
-        totalProdutosElemento.innerText = totalProdutos;
-    }
-
-    if (totalPedidosElemento) {
-        totalPedidosElemento.innerText = totalPedidos;
-    }
-
-    if (pedidosPendentesElemento) {
-        pedidosPendentesElemento.innerText = pedidosPendentes;
-    }
-
-    if (pedidosConcluidosElemento) {
-        pedidosConcluidosElemento.innerText = pedidosConcluidos;
-    }
-
-    if (vendasMesElemento) {
-        vendasMesElemento.innerText = `R$ ${vendasMes.toFixed(2)}`;
+function carregarFuncionamentoLocalAdmin() {
+    try {
+        return JSON.parse(localStorage.getItem("funcionamentoLojaMercadinho")) || null;
+    } catch (erro) {
+        return null;
     }
 }
 
-function atualizarProdutosMaisVendidos(pedidos = []) {
+function normalizarTexto(texto) { return normalizarTextoAdmin(texto); }
 
-    const ranking = {};
-
-    pedidos.forEach(pedido => {
-
-        if (pedido.status !== "Concluído") {
-            return;
-        }
-
-        if (!pedido.pedido) {
-            return;
-        }
-
-        const itens = pedido.pedido.split(",");
-
-        itens.forEach(item => {
-
-            const texto = item.trim();
-
-            const partes = texto.match(/(.+)\sx([\d.,]+)/);
-
-            if (partes) {
-
-                const nomeProduto = partes[1].trim();
-
-                const quantidade = Number(partes[2].replace(",", "."));
-
-                if (!ranking[nomeProduto]) {
-                    ranking[nomeProduto] = 0;
-                }
-
-                ranking[nomeProduto] += quantidade;
-            }
-        });
-    });
-
-    const lista = document.getElementById("listaMaisVendidos");
-
-    if (!lista) {
-        return;
-    }
-
-    lista.innerHTML = "";
-
-    const produtosOrdenados = Object.entries(ranking)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);
-
-    if (produtosOrdenados.length === 0) {
-
-        lista.innerHTML = `
-            <li>
-                Nenhum produto vendido ainda
-            </li>
-        `;
-
-        return;
-    }
-
-    produtosOrdenados.forEach(([nome, quantidade], index) => {
-
-        lista.innerHTML += `
-            <li>
-                <span>${index + 1}. ${nome}</span>
-                <strong>${formatarQuantidadeRanking(nome, quantidade)}</strong>
-            </li>
-        `;
-    });
+function normalizarTextoAdmin(texto) {
+    return String(texto || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ç/g, "c")
+        .replace(/[^a-z0-9]/g, "");
 }
 
-function aplicarFiltrosPedidos() {
+function produtoEhGasAdmin(produto) {
+    const texto = normalizarTextoAdmin([
+        produto?.nome,
+        produto?.categoria,
+        nomeCategoria(produto?.categoria)
+    ].join(" "));
 
-    const valorMes = document.getElementById("filtroMes")?.value;
-
-    const valorDia = document.getElementById("filtroDia")?.value;
-
-    const valorStatus = document.getElementById("filtroStatus")?.value || "Todos";
-
-    let pedidosFiltrados = [...pedidosGlobais];
-
-    if (valorMes) {
-
-        pedidosFiltrados = pedidosFiltrados.filter(pedido => {
-
-            const dataPedido = new Date(pedido.data);
-
-            const ano = dataPedido.getFullYear();
-
-            const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
-
-            const anoMesPedido = `${ano}-${mes}`;
-
-            return anoMesPedido === valorMes;
-        });
-    }
-
-    if (valorDia) {
-
-        pedidosFiltrados = pedidosFiltrados.filter(pedido => {
-
-            const dataPedido = new Date(pedido.data);
-
-            const ano = dataPedido.getFullYear();
-
-            const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
-
-            const dia = String(dataPedido.getDate()).padStart(2, "0");
-
-            const dataFormatada = `${ano}-${mes}-${dia}`;
-
-            return dataFormatada === valorDia;
-        });
-    }
-
-    if (valorStatus !== "Todos") {
-
-        pedidosFiltrados = pedidosFiltrados.filter(pedido => {
-            return pedido.status === valorStatus;
-        });
-    }
-
-    renderizarPedidos([...pedidosFiltrados]);
-
-    atualizarDashboard(pedidosFiltrados);
-
-    atualizarProdutosMaisVendidos(pedidosFiltrados);
+    return texto.includes("gas") || texto.includes("botijao");
 }
-
-function limparFiltroMes() {
-
-    document.getElementById("filtroMes").value = "";
-
-    document.getElementById("filtroDia").value = "";
-
-    document.getElementById("filtroStatus").value = "Todos";
-
-    renderizarPedidos([...pedidosGlobais]);
-
-    atualizarDashboard(pedidosGlobais);
-
-    atualizarProdutosMaisVendidos(pedidosGlobais);
-}
-
-function formatarPedido(textoPedido) {
-
-    if (!textoPedido) {
-        return "";
-    }
-
-    return textoPedido
-        .split(",")
-        .map(item => item.trim())
-        .join("<br>");
-}
-
-function formatarDataHora(data) {
-
-    const dataPedido = new Date(data);
-
-    if (isNaN(dataPedido.getTime())) {
-        return data;
-    }
-
-    return dataPedido.toLocaleString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-    });
-}
-
-function classeStatus(status) {
-
-    if (status === "Pendente") {
-        return "status-pendente";
-    }
-
-    if (status === "Em separação") {
-        return "status-separacao";
-    }
-
-    if (status === "Saiu para entrega") {
-        return "status-entrega";
-    }
-
-    if (status === "Concluído") {
-        return "status-concluido";
-    }
-
-    if (status === "Cancelado") {
-        return "status-cancelado";
-    }
-
-    return "";
-}
-
-function avisarClienteWhatsApp(nome, telefone) {
-
-    const telefoneLimpo = String(telefone).replace(/\D/g, "");
-    const numeroCliente = `55${telefoneLimpo}`;
-
-    const mensagem = `Olá, ${nome}! Seu pedido do Mercadinho Ponto Certo saiu para entrega. Em breve chegará no endereço informado.`;
-
-    const mensagemFormatada = encodeURIComponent(mensagem);
-
-    window.open(`https://wa.me/${numeroCliente}?text=${mensagemFormatada}`, "_blank");
-}
-
-function formatarEstoqueAdmin(estoque, tipoVenda) {
-
-    if (tipoVenda === "Peso") {
-        return `${Number(estoque).toFixed(3).replace(".", ",")} kg`;
-    }
-
-    return `${Number(estoque)} un`;
-}
-
-function formatarQuantidadeRanking(nomeProduto, quantidade) {
-
-    const produto = produtos.find(item => {
-        return item.nome === nomeProduto;
-    });
-
-    if (produto && produto.tipoVenda === "Peso") {
-        return `${quantidade.toFixed(3).replace(".", ",")} kg`;
-    }
-
-    return `${quantidade} unidade(s)`;
-}
-
-function filtrarPedidosHoje() {
-
-    const hoje = new Date();
-
-    const anoHoje = hoje.getFullYear();
-
-    const mesHoje = String(hoje.getMonth() + 1).padStart(2, "0");
-
-    const diaHoje = String(hoje.getDate()).padStart(2, "0");
-
-    const dataHoje = `${anoHoje}-${mesHoje}-${diaHoje}`;
-
-    const filtroDia = document.getElementById("filtroDia");
-
-    if (filtroDia) {
-        filtroDia.value = dataHoje;
-    }
-
-    aplicarFiltrosPedidos();
-}
-
-function mostrarCarregamentoAdmin(mensagem = "Atualizando...") {
-
-    const aviso = document.getElementById("avisoAdminCarregamento");
-    const texto = document.getElementById("textoAdminCarregamento");
-
-    if (!aviso || !texto) {
-        return;
-    }
-
-    texto.innerText = mensagem;
-    aviso.style.display = "flex";
-}
-
-function esconderCarregamentoAdmin() {
-
-    const aviso = document.getElementById("avisoAdminCarregamento");
-
-    if (!aviso) {
-        return;
-    }
-
-    aviso.style.display = "none";
-}
-
-function atualizarEstoqueBaixo() {
-
-    const tbody = document.querySelector("#tabelaEstoqueBaixo tbody");
-
-    if (!tbody) {
-        return;
-    }
-
-    tbody.innerHTML = "";
-
-    const produtosBaixoEstoque = produtos.filter(produto => {
-
-        const estoque = Number(produto.estoque);
-        const tipoVenda = produto.tipoVenda;
-
-        if (tipoVenda === "Peso") {
-            return estoque <= 1;
-        }
-
-        return estoque <= 5;
-    });
-
-    if (produtosBaixoEstoque.length === 0) {
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="4" class="estoque-ok-tabela">
-                    Nenhum produto com estoque baixo.
-                </td>
-            </tr>
-        `;
-
-        return;
-    }
-
-    produtosBaixoEstoque.forEach(produto => {
-
-        const estoque = Number(produto.estoque);
-
-        let situacao = "Atenção";
-
-        if (estoque <= 0) {
-            situacao = "Sem estoque";
-        }
-
-        tbody.innerHTML += `
-            <tr>
-                <td>${produto.nome}</td>
-                <td>${formatarEstoqueAdmin(produto.estoque, produto.tipoVenda)}</td>
-                <td>${produto.tipoVenda || "-"}</td>
-                <td>
-                    <span class="${estoque <= 0 ? "badge-sem-estoque" : "badge-estoque-baixo"}">
-                        ${situacao}
-                    </span>
-                </td>
-            </tr>
-        `;
-    });
-}
+function nomeCategoria(categoria) { const nomes={Bebidas:"Bebidas",Massas:"Massas",Graos:"Grãos",Laticinios:"Laticínios",AguaGas:"Água/Gás",Hortifruti:"Hortifruti",Frios:"Frios"}; return nomes[categoria] || categoria || "-"; }
+function formatarEstoqueAdmin(estoque,tipoVenda) { const v=Number(estoque||0); return tipoVenda==="Peso" ? `${v.toFixed(3).replace(".", ",")} kg` : `${Math.floor(v)} un`; }
+function formatarDataHora(data) { if(!data) return "-"; const d=new Date(data); if(isNaN(d)) return data; return d.toLocaleDateString("pt-BR") + ", " + d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
+function formatarDataInput(data) { const d=new Date(data); if(isNaN(d)) return ""; return d.toISOString().slice(0,10); }
+function formatarPedido(texto) { return String(texto || "-").replace(/,/g,"<br>"); }
+function classeStatus(status) { return {"Pendente":"status-pendente","Em separação":"status-separacao","Saiu para entrega":"status-entrega","Concluído":"status-concluido","Cancelado":"status-cancelado"}[status] || "status-pendente"; }
+function avisarClienteWhatsApp(nome, telefone) { const tel=String(telefone||"").replace(/\D/g,""); if(!tel) return alert("Telefone inválido."); const msg=encodeURIComponent(`Olá, ${nome}! Seu pedido do Mercadinho Ponto Certo saiu para entrega.`); window.open(`https://wa.me/55${tel}?text=${msg}`,"_blank"); }

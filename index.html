@@ -1,407 +1,145 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta 
-        name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
-    >
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"
+    />
     <title>Mercadinho Ponto Certo</title>
-
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
     <div id="loading" class="loading">
-        <div class="loader"></div>
-        <p>Carregando Mercadinho...</p>
+      <div class="loader"></div>
+      <p>Carregando Mercadinho...</p>
     </div>
 
     <header>
-
-        <div class="logo-area">
-
-            <button class="botao-carrinho" onclick="abrirCarrinho()" title="Carrinho">
-                <span id="contadorCarrinho">0</span>
-            </button>
-
-            <img src="imagens/logo.png" alt="Logo">
-
-            <div>
-                <h1>Mercadinho Ponto Certo</h1>
-                <p>Sua mercearia online</p>
-            </div>
-
+      <div class="logo-area">
+        <button
+          class="botao-carrinho"
+          onclick="abrirCarrinho()"
+          title="Carrinho"
+        >
+          <span id="contadorCarrinho">0</span>
+        </button>
+        <img src="imagens/logo.png" alt="Logo Mercadinho Ponto Certo" />
+        <div>
+          <h1>Mercadinho Ponto Certo</h1>
+          <p>Sua mercearia online</p>
         </div>
-
+      </div>
     </header>
 
-        <section class="banner">
-
-        <div class="banner-texto">
-
-            <h2>
-                Ofertas da Semana 🔥
-            </h2>
-
-            <p>
-                Entrega rápida no seu bairro com os melhores preços.
-            </p>
-
-            <button onclick="window.scrollTo(0, 500)">
-
-                Ver Produtos
-
-            </button>
-
-        </div>
-
+    <section class="banner">
+      <div class="banner-texto">
+        <h2>Ofertas da Semana 🔥</h2>
+        <p>
+          Escolha os produtos, confira o carrinho e finalize seu pedido com
+          praticidade.
+        </p>
+        <button onclick="window.scrollTo({ top: 500, behavior: 'smooth' })">
+          Ver Produtos
+        </button>
+      </div>
     </section>
 
     <section class="info-loja">
-
-        <div id="statusLoja" class="status-loja">
-            Verificando horário de funcionamento...
-        </div>
-
-        <div class="endereco-loja">
-            <strong>Endereço:</strong><br>
-
-            <a
-                href="https://www.google.com/maps/search/?api=1&query=R.%20Evaristo%20da%20Veiga%2C%20910%20-%20Messejana%2C%20Fortaleza%20-%20CE%2C%2060841-415%2C%20Brasil"
-                target="_blank"
-                class="link-endereco-loja"
-            >
-                R. Evaristo da Veiga, 910 - Messejana, Fortaleza - CE, 60841-415, Brasil
-            </a>
-        </div>
-
-        <div class="horario-loja">
-            <strong>Horário de funcionamento:</strong><br>
-            Segunda a sábado: 07:00 às 12:00 e 14:00 às 19:30<br>
-            <strong>Entregas até 17:30</strong><br>
-            Domingo: fechado
-        </div>
-
+      <div id="statusLoja" class="status-loja">
+        Verificando horário de funcionamento...
+      </div>
+      <div class="endereco-loja">
+        <strong>Endereço:</strong><br />
+        <a
+          href="https://www.google.com/maps/search/?api=1&query=R.%20Evaristo%20da%20Veiga%2C%20910%20-%20Messejana%2C%20Fortaleza%20-%20CE%2C%2060841-415%2C%20Brasil"
+          target="_blank"
+          class="link-endereco-loja"
+        >
+          R. Evaristo da Veiga, 910 - Messejana, Fortaleza - CE, 60841-415,
+          Brasil
+        </a>
+      </div>
+      <div class="horario-loja">
+        <strong>Horário de funcionamento:</strong><br />
+        Segunda a sábado: 07:00 às 12:00 e 14:00 às 19:30<br />
+        <strong>Entregas até 17:30</strong><br />
+        Domingo: fechado
+      </div>
     </section>
 
     <section class="categorias">
-
-        <button onclick="filtrarCategoria('Todos')">
-            Todos
-        </button>
-
-        <button onclick="filtrarCategoria('Bebidas')">
-            Bebidas
-        </button>
-
-        <button onclick="filtrarCategoria('Massas')">
-            Massas
-        </button>
-
-        <button onclick="filtrarCategoria('Graos')">
-            Grãos
-        </button>
-
-        <button onclick="filtrarCategoria('Laticinios')">
-            Laticínios
-        </button>
-
-        <button onclick="filtrarCategoria('AguaGas')">
-            Água/Gás
-        </button>
-
+      <button onclick="filtrarCategoria('Todos')">Todos</button>
+      <button onclick="filtrarCategoria('Bebidas')">Bebidas</button>
+      <button onclick="filtrarCategoria('Massas')">Massas</button>
+      <button onclick="filtrarCategoria('Graos')">Grãos</button>
+      <button onclick="filtrarCategoria('Laticinios')">Laticínios</button>
+      <button onclick="filtrarCategoria('AguaGas')">Água/Gás</button>
+      <button onclick="filtrarCategoria('Hortifruti')">Hortifruti</button>
+      <button onclick="filtrarCategoria('Frios')">Frios</button>
     </section>
 
     <main>
+      <h2 class="titulo-produtos">Produtos</h2>
+      <input
+        type="text"
+        id="campoBusca"
+        class="campo-busca"
+        placeholder="Buscar produto..."
+        oninput="filtrarProdutos()"
+      />
+      <section class="produtos" id="produtos"></section>
 
-        <h2 class="titulo-produtos">Produtos</h2>
-
-        <input
-            type="text"
-            id="campoBusca"
-            placeholder="Buscar produto..."
-            oninput="filtrarProdutos()"
-        >
-
-            <section class="produtos" id="produtos">
-            </section>
-
-            <section class="carrinho">
-
-                <h2>Carrinho</h2>
-
-                <ul id="lista-carrinho"></ul>
-
-                <h3 id="total">
-                    Total: R$ 0,00
-                </h3>
-
-                <p id="taxa-entrega">
-                    Taxa de entrega: R$ 0,00
-                </p>
-
-                <h3 id="total-final">
-                    Total final: R$ 0,00
-                </h3>
-
-                </section>
-
-            <section class="cliente">
-
-                <h2>Dados do Cliente</h2>
-
-                <div class="opcoes-cliente">
-
-                    <button type="button" onclick="mostrarBuscaCliente()">
-                        Já tenho cadastro
-                    </button>
-
-                    <button type="button" onclick="mostrarCadastroCliente()">
-                        Novo cadastro
-                    </button>
-
-                </div>
-
-                <div id="areaBuscaCliente" class="area-busca-cliente">
-
-                <div class="campo-telefone-whatsapp">
-
-                    <span class="icone-whatsapp-campo">
-                        <img src="imagens/zap.png" alt="WhatsApp">
-                    </span>
-
-                    <input
-                        type="text"
-                        id="telefoneBusca"
-                        placeholder="Digite seu telefone"
-                    >
-
-                </div>
-
-                    <button
-                        type="button"
-                        id="btnBuscarCliente"
-                        onclick="buscarCliente()"
-                    >
-                        Buscar cadastro
-                    </button>
-
-                </div>
-
-                <div id="areaCadastroCliente" class="area-cadastro-cliente">
-
-                <input type="text" id="nome" placeholder="Seu nome">
-
-                <div class="campo-telefone-whatsapp">
-
-                    <span class="icone-whatsapp-campo">
-                        <img src="imagens/zap.png" alt="WhatsApp">
-                    </span>
-
-                    <input
-                        type="text"
-                        id="telefone"
-                        placeholder="Telefone"
-                    >
-
-                </div>
-
-                <input type="text" id="endereco" placeholder="Endereço">
-
-                    <select id="pagamento" onchange="verificarPagamentoDinheiro(); verificarPagamentoPix(); atualizarCarrinho();">
-                        <option value="">Forma de pagamento</option>
-                        <option value="Pix">Pix</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                        <option value="Cartão">Cartão</option>
-                    </select>
-
-                    <div id="areaPix" class="area-pix">
-                        <p class="titulo-pix">
-                            Pagamento via Pix
-                        </p>
-
-                        <div id="pixMercadinho" class="box-pix">
-                            <strong>Pix do Mercadinho:</strong>
-                            <span>64382648000152</span>
-
-                            <button type="button" onclick="copiarPix('64382648000152')">
-                                Copiar Pix Mercadinho
-                            </button>
-                        </div>
-
-                        <div id="pixGas" class="box-pix">
-                            <strong>Pix do Gás:</strong>
-                            <span>85996726861</span>
-
-                            <button type="button" onclick="copiarPix('85996726861')">
-                                Copiar Pix do Gás
-                            </button>
-                        </div>
-
-                        <div id="avisoPixGas" class="aviso-pix-gas">
-                            Atenção: produtos de gás devem ser pagos em uma chave Pix separada, pois são administrados fora do mercadinho.
-                        </div>
-                    </div>
-
-                    <div id="campoTroco" class="campo-troco">
-                        <input
-                            type="text"
-                            id="troco"
-                            placeholder="Troco para quanto? (opcional)"
-                        >
-                    </div>
-
-                    <div id="campoTroco" class="campo-troco">
-                        <input
-                            type="text"
-                            id="troco"
-                            placeholder="Troco para quanto? (opcional)"
-                        >
-                    </div>
-
-                    <select id="entrega" onchange="atualizarCarrinho()">
-                        <option value="Entrega">Entrega</option>
-                        <option value="Retirada">Retirada</option>
-                    </select>
-
-                    <textarea
-                        id="observacao"
-                        placeholder="Observação do pedido (opcional). Ex: deixar na portaria, ponto de referência..."
-                        rows="3"
-                    ></textarea>
-
-                    <button onclick="finalizarPedido()">
-                        Finalizar Pedido
-                    </button>
-
-                </div>
-
-            </section>
-
-            
+      <section class="carrinho" id="areaCarrinho">
+        <h2>Carrinho</h2>
+        <ul id="lista-carrinho"></ul>
+        <h3 id="total">Subtotal: R$ 0,00</h3>
+        <p id="taxa-entrega">Taxa de entrega: R$ 0,00</p>
+        <h3 id="total-final">Total final: R$ 0,00</h3>
+        <div class="botoes-carrinho">
+          <button class="btn-finalizar-principal" onclick="irParaFinalizacao()">
+            Finalizar Pedido
+          </button>
+          <button class="btn-limpar-carrinho" onclick="limparCarrinho()">
+            Limpar Carrinho
+          </button>
+        </div>
+      </section>
     </main>
 
     <div id="avisoCarregamento" class="aviso-carregamento">
-        <div class="caixa-carregamento">
-            <div class="spinner-carregamento"></div>
-            <p id="textoCarregamento">Carregando...</p>
+      <div class="caixa-carregamento">
+        <div class="spinner-carregamento"></div>
+        <p id="textoCarregamento">Carregando...</p>
+      </div>
+    </div>
+
+    <a href="https://wa.me/558598439003" class="whatsapp-float" target="_blank">
+      <img src="imagens/zap.png" alt="WhatsApp" />
+    </a>
+
+    <div id="modalCarrinho" class="modal-carrinho">
+      <div class="conteudo-modal">
+        <div class="topo-modal">
+          <h2>Seu Carrinho</h2>
+          <button onclick="fecharCarrinho()">X</button>
         </div>
+        <ul id="lista-carrinho-modal"></ul>
+        <h3 id="total-modal">Total: R$ 0,00</h3>
+        <button onclick="irParaFinalizacao()">Finalizar Pedido</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast">Produto adicionado ao carrinho!</div>
+
+    <div id="resumoFixoCarrinho" class="resumo-fixo-carrinho">
+      <div>
+        <strong id="resumoItens">0 itens</strong>
+        <span id="resumoTotal">R$ 0,00</span>
+      </div>
+      <button onclick="irParaFinalizacao()">Finalizar</button>
     </div>
 
     <script src="js/app.js"></script>
-
-<a
-    href="https://wa.me/558598439003"
-    class="whatsapp-float"
-    target="_blank"
->
-
-    <img
-        src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
-        alt="WhatsApp"
-    >
-
-</a>
-
-<div id="modalCarrinho" class="modal-carrinho">
-
-    <div class="conteudo-modal">
-
-        <div class="topo-modal">
-
-            <h2>Seu Carrinho</h2>
-
-            <button onclick="fecharCarrinho()">
-
-                X
-
-            </button>
-
-        </div>
-
-        <ul id="lista-carrinho-modal"></ul>
-
-        <h3 id="total-modal">
-
-            Total: R$ 0,00
-
-        </h3>
-
-    </div>
-
-</div>
-
-<div id="toast" class="toast">
-    Produto adicionado ao carrinho!
-</div>
-
-<div id="modalConfirmacao" class="modal-confirmacao">
-
-    <div class="confirmacao-box">
-
-        <h2>Confirmar Pedido</h2>
-
-        <div id="resumoPedido"></div>
-
-        <div class="botoes-confirmacao">
-
-            <button onclick="confirmarEnvioPedido()">
-                Confirmar
-            </button>
-
-            <button onclick="fecharConfirmacao()" class="btn-cancelar">
-                Cancelar
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div id="modalConfirmacao" class="modal-confirmacao">
-
-    <div class="confirmacao-box">
-
-        <h2>Confirmar Pedido</h2>
-
-        <div id="resumoPedido"></div>
-
-        <div class="botoes-confirmacao">
-
-            <button onclick="confirmarEnvioPedido()">
-                Confirmar
-            </button>
-
-            <button onclick="fecharConfirmacao()" class="btn-cancelar">
-                Cancelar
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div id="resumoFixoCarrinho" class="resumo-fixo-carrinho">
-
-    <div>
-        <strong id="resumoItens">
-            0 itens
-        </strong>
-
-        <span id="resumoTotal">
-            R$ 0,00
-        </span>
-    </div>
-
-    <button onclick="document.querySelector('.cliente').scrollIntoView({ behavior: 'smooth' })">
-        Finalizar
-    </button>
-
-</div>
-
-</body>
+  </body>
 </html>
