@@ -2160,3 +2160,129 @@ header {
         padding: 10px 14px !important;
     }
 }
+
+/* MELHORIA MOBILE DA ABA PEDIDOS */
+
+.lista-pedidos-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    .tabela-scroll,
+    .tabela-pedidos-scroll,
+    #tabelaPedidos {
+        display: none !important;
+    }
+
+    .lista-pedidos-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 20px;
+    }
+
+    .pedido-card-mobile {
+        background: white;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        border-left: 6px solid #0047b3;
+    }
+
+    .pedido-card-topo {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .pedido-card-topo strong {
+        display: block;
+        font-size: 18px;
+        color: #222;
+    }
+
+    .pedido-card-topo span {
+        display: block;
+        font-size: 14px;
+        color: #666;
+        margin-top: 4px;
+    }
+
+    .pedido-card-total {
+        background: #0047b3;
+        color: white;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .pedido-card-info p {
+        margin: 8px 0;
+        font-size: 15px;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .pedido-card-acoes {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .pedido-card-acoes select {
+        width: 100% !important;
+        height: 48px !important;
+        font-size: 16px !important;
+        border-radius: 8px !important;
+        padding: 8px !important;
+    }
+
+    .btn-whatsapp-card {
+        width: 100% !important;
+        height: 48px !important;
+        background: #25d366 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+    }
+
+    .filtros-pedidos,
+    .filtros-admin,
+    .area-filtros {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: stretch !important;
+    }
+
+    .filtros-pedidos label,
+    .filtros-admin label,
+    .area-filtros label {
+        font-size: 16px !important;
+        font-weight: bold !important;
+    }
+
+    .filtros-pedidos input,
+    .filtros-pedidos select,
+    .filtros-pedidos button,
+    .filtros-admin input,
+    .filtros-admin select,
+    .filtros-admin button,
+    .area-filtros input,
+    .area-filtros select,
+    .area-filtros button {
+        width: 100% !important;
+        height: 48px !important;
+        font-size: 16px !important;
+        border-radius: 10px !important;
+    }
+}

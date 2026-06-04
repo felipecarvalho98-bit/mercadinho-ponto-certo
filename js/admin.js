@@ -146,13 +146,87 @@ function carregarPedidos() {
         atualizarDashboard(pedidosGlobais); atualizarProdutosMaisVendidos(pedidosGlobais);
     }).catch(err=>{ console.error(err); alert("Erro ao carregar pedidos."); }).finally(esconderCarregamentoAdmin);
 }
-function renderizarPedidos(pedidos) {
-    const tbody=document.querySelector("#tabelaPedidos tbody"); if(!tbody) return; tbody.innerHTML="";
-    const ordenados=[...pedidos].sort((a,b)=> new Date(a.data) - new Date(b.data));
-    ordenados.forEach(pedido=>{
-        tbody.innerHTML += `<tr><td>${formatarDataHora(pedido.data)}</td><td>${pedido.nome || "-"}</td><td>${pedido.telefone || "-"}</td><td>${pedido.endereco || "-"}</td><td>${pedido.pagamento || "-"}</td><td>${pedido.entrega || "-"}</td><td>${formatarPedido(pedido.pedido)}</td><td>${pedido.observacao || "-"}</td><td>R$ ${Number(pedido.total || 0).toFixed(2)}</td><td><select class="status-select ${classeStatus(pedido.status)}" data-status-anterior="${pedido.status}" onchange="alterarStatusPedido(${pedido.linha}, this.value, this)"><option value="Pendente" ${pedido.status==="Pendente"?"selected":""}>Pendente</option><option value="Em separação" ${pedido.status==="Em separação"?"selected":""}>Em separação</option><option value="Saiu para entrega" ${pedido.status==="Saiu para entrega"?"selected":""}>Saiu para entrega</option><option value="Concluído" ${pedido.status==="Concluído"?"selected":""}>Concluído</option><option value="Cancelado" ${pedido.status==="Cancelado"?"selected":""}>Cancelado</option></select></td><td>${pedido.status==="Saiu para entrega" ? `<button class="btn-avisar-cliente" onclick="avisarClienteWhatsApp('${pedido.nome}','${pedido.telefone}')">Avisar cliente</button>` : "-"}</td></tr>`;
+
+function renderizarPedidos(listaPedidos = pedidos) {
+
+    const tbody = document.querySelector("#tabelaPedidos tbody");
+
+    if (!tbody) {
+        return;
+    }
+
+    tbody.innerHTML = "";
+
+    const pedidosOrdenados = [...listaPedidos].sort((a, b) => {
+        const dataA = converterDataPedido(a.data);
+        const dataB = converterDataPedido(b.data);
+
+        return dataA - dataB;
     });
+
+    if (pedidosOrdenados.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" style="text-align: center; font-weight: bold;">
+                    Nenhum pedido encontrado.
+                </td>
+            </tr>
+        `;
+
+        renderizarPedidosMobile([]);
+        return;
+    }
+
+    pedidosOrdenados.forEach(pedido => {
+
+        const totalFormatado = formatarValorPedido(pedido.total);
+        const statusAtual = pedido.status || "Pendente";
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${pedido.data || "-"}</td>
+                <td>${pedido.nome || "-"}</td>
+                <td>${pedido.telefone || "-"}</td>
+                <td>${pedido.endereco || "-"}</td>
+                <td>${pedido.pagamento || "-"}</td>
+                <td>${pedido.entrega || "-"}</td>
+                <td>${pedido.pedido || "-"}</td>
+                <td>${pedido.observacao || "-"}</td>
+                <td>${totalFormatado}</td>
+                <td>
+                    <select 
+                        class="status-select ${classeStatus(statusAtual)}"
+                        onchange="alterarStatusPedido('${pedido.linha}', this.value)"
+                    >
+                        <option value="Pendente" ${statusAtual === "Pendente" ? "selected" : ""}>Pendente</option>
+                        <option value="Em separação" ${statusAtual === "Em separação" ? "selected" : ""}>Em separação</option>
+                        <option value="Saiu para entrega" ${statusAtual === "Saiu para entrega" ? "selected" : ""}>Saiu para entrega</option>
+                        <option value="Concluído" ${statusAtual === "Concluído" ? "selected" : ""}>Concluído</option>
+                        <option value="Cancelado" ${statusAtual === "Cancelado" ? "selected" : ""}>Cancelado</option>
+                    </select>
+                </td>
+                <td>
+                    ${
+                        statusAtual === "Saiu para entrega"
+                        ? `
+                            <button 
+                                class="btn-avisar-cliente"
+                                onclick="avisarClienteWhatsApp('${pedido.nome || ""}', '${pedido.telefone || ""}')"
+                            >
+                                Avisar cliente
+                            </button>
+                        `
+                        : "-"
+                    }
+                </td>
+            </tr>
+        `;
+    });
+
+    renderizarPedidosMobile(pedidosOrdenados);
 }
+
 function alterarStatusPedido(linha,status,select) {
     const valorAnterior=select.getAttribute("data-status-anterior") || select.value;
     select.disabled=true; select.className=`status-select ${classeStatus(status)}`; mostrarCarregamentoAdmin("Atualizando status...");
@@ -288,3 +362,130 @@ function formatarDataInput(data) { const d=new Date(data); if(isNaN(d)) return "
 function formatarPedido(texto) { return String(texto || "-").replace(/,/g,"<br>"); }
 function classeStatus(status) { return {"Pendente":"status-pendente","Em separação":"status-separacao","Saiu para entrega":"status-entrega","Concluído":"status-concluido","Cancelado":"status-cancelado"}[status] || "status-pendente"; }
 function avisarClienteWhatsApp(nome, telefone) { const tel=String(telefone||"").replace(/\D/g,""); if(!tel) return alert("Telefone inválido."); const msg=encodeURIComponent(`Olá, ${nome}! Seu pedido do Mercadinho Ponto Certo saiu para entrega.`); window.open(`https://wa.me/55${tel}?text=${msg}`,"_blank"); }
+
+function renderizarPedidosMobile(pedidos = []) {
+
+    const listaMobile = document.getElementById("listaPedidosMobile");
+
+    if (!listaMobile) {
+        return;
+    }
+
+    listaMobile.innerHTML = "";
+
+    if (!pedidos || pedidos.length === 0) {
+
+        listaMobile.innerHTML = `
+            <div class="pedido-card-mobile">
+                <p>Nenhum pedido encontrado.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    pedidos.forEach(pedido => {
+
+        const telefoneLimpo = String(pedido.telefone || "").replace(/\D/g, "");
+
+        listaMobile.innerHTML += `
+            <div class="pedido-card-mobile">
+
+                <div class="pedido-card-topo">
+                    <div>
+                        <strong>${pedido.nome || "-"}</strong>
+                        <span>${formatarDataHora(pedido.data)}</span>
+                    </div>
+
+                    <div class="pedido-card-total">
+                        R$ ${Number(pedido.total || 0).toFixed(2)}
+                    </div>
+                </div>
+
+                <div class="pedido-card-info">
+                    <p><strong>Telefone:</strong> ${pedido.telefone || "-"}</p>
+                    <p><strong>Endereço:</strong> ${pedido.endereco || "-"}</p>
+                    <p><strong>Pagamento:</strong> ${pedido.pagamento || "-"}</p>
+                    <p><strong>Tipo:</strong> ${pedido.entrega || "-"}</p>
+                    <p><strong>Pedido:</strong> ${formatarPedido(pedido.pedido || "-")}</p>
+                    <p><strong>Observação:</strong> ${pedido.observacao || "-"}</p>
+                </div>
+
+                <div class="pedido-card-acoes">
+
+                    <select 
+                        class="status-select ${classeStatus(pedido.status)}"
+                        data-status-anterior="${pedido.status}"
+                        onchange="alterarStatusPedido(${pedido.linha}, this.value)"
+                    >
+                        <option value="Pendente" ${pedido.status === "Pendente" ? "selected" : ""}>Pendente</option>
+                        <option value="Em separação" ${pedido.status === "Em separação" ? "selected" : ""}>Em separação</option>
+                        <option value="Saiu para entrega" ${pedido.status === "Saiu para entrega" ? "selected" : ""}>Saiu para entrega</option>
+                        <option value="Concluído" ${pedido.status === "Concluído" ? "selected" : ""}>Concluído</option>
+                        <option value="Cancelado" ${pedido.status === "Cancelado" ? "selected" : ""}>Cancelado</option>
+                    </select>
+
+                    <button 
+                        class="btn-whatsapp-card"
+                        onclick="avisarClienteWhatsApp('${pedido.nome}', '${telefoneLimpo}')"
+                    >
+                        WhatsApp
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+    });
+}
+
+function converterDataPedido(dataTexto) {
+
+    if (!dataTexto) {
+        return new Date(0);
+    }
+
+    const texto = String(dataTexto).trim();
+
+    const partes = texto.match(/(\d{2})\/(\d{2})\/(\d{4}),?\s*(\d{2})?:?(\d{2})?/);
+
+    if (partes) {
+
+        const dia = partes[1];
+        const mes = partes[2];
+        const ano = partes[3];
+        const hora = partes[4] || "00";
+        const minuto = partes[5] || "00";
+
+        return new Date(`${ano}-${mes}-${dia}T${hora}:${minuto}:00`);
+    }
+
+    const dataConvertida = new Date(texto);
+
+    if (isNaN(dataConvertida.getTime())) {
+        return new Date(0);
+    }
+
+    return dataConvertida;
+}
+
+function formatarValorPedido(valor) {
+
+    if (typeof valor === "number") {
+        return `R$ ${valor.toFixed(2)}`;
+    }
+
+    const texto = String(valor || "0").trim();
+
+    if (texto.includes("R$")) {
+        return texto;
+    }
+
+    const numero = Number(texto.replace(",", "."));
+
+    if (isNaN(numero)) {
+        return "R$ 0.00";
+    }
+
+    return `R$ ${numero.toFixed(2)}`;
+}
