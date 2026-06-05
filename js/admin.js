@@ -208,7 +208,7 @@ function renderizarPedidos(listaPedidos = pedidos) {
                 </td>
                 <td>
                     ${
-                        statusAtual === "Saiu para entrega"
+                        statusPermiteAvisarCliente(statusAtual)
                         ? `
                             <button 
                                 class="btn-avisar-cliente"
@@ -227,14 +227,58 @@ function renderizarPedidos(listaPedidos = pedidos) {
     renderizarPedidosMobile(pedidosOrdenados);
 }
 
-function alterarStatusPedido(linha,status,select) {
-    const valorAnterior=select.getAttribute("data-status-anterior") || select.value;
-    select.disabled=true; select.className=`status-select ${classeStatus(status)}`; mostrarCarregamentoAdmin("Atualizando status...");
-    fetch(API_URL, { method:"POST", body:JSON.stringify({ tipo:"status", linha, status }) })
-        .then(r=>r.text()).then(()=>{ select.setAttribute("data-status-anterior",status); alert("Status atualizado com sucesso!"); carregarPedidos(); })
-        .catch(err=>{ console.error(err); alert("Erro ao atualizar status."); select.value=valorAnterior; select.className=`status-select ${classeStatus(valorAnterior)}`; })
-        .finally(()=>{ select.disabled=false; esconderCarregamentoAdmin(); });
+async function alterarStatusPedido(linha, novoStatus) {
+
+    const confirmar = confirm(`Deseja alterar o status para "${novoStatus}"?`);
+
+    if (!confirmar) {
+        await carregarPedidosMantendoFiltros();
+        return;
+    }
+
+    const filtroMesAtual = document.getElementById("filtroMes")?.value || "";
+    const filtroDiaAtual = document.getElementById("filtroDia")?.value || "";
+    const filtroStatusAtual = document.getElementById("filtroStatus")?.value || "Todos";
+
+    mostrarCarregamentoAdmin("Atualizando status...");
+
+    try {
+
+        const dadosStatus = {
+            tipo: "status",
+            linha: linha,
+            status: novoStatus
+        };
+
+        const resposta = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify(dadosStatus)
+        });
+
+        const textoResposta = await resposta.text();
+
+        console.log("Resposta ao atualizar status:", textoResposta);
+
+        alert("Status atualizado com sucesso!");
+
+        await carregarPedidosMantendoFiltros(
+            filtroMesAtual,
+            filtroDiaAtual,
+            filtroStatusAtual
+        );
+
+    } catch (erro) {
+
+        console.error("Erro ao atualizar status:", erro);
+
+        alert("Erro ao atualizar status. Tente novamente.");
+
+    } finally {
+
+        esconderCarregamentoAdmin();
+    }
 }
+
 function aplicarFiltrosPedidos() {
     const mes=document.getElementById("filtroMes")?.value;
     const dia=document.getElementById("filtroDia")?.value;
@@ -360,7 +404,38 @@ function formatarEstoqueAdmin(estoque,tipoVenda) { const v=Number(estoque||0); r
 function formatarDataHora(data) { if(!data) return "-"; const d=new Date(data); if(isNaN(d)) return data; return d.toLocaleDateString("pt-BR") + ", " + d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
 function formatarDataInput(data) { const d=new Date(data); if(isNaN(d)) return ""; return d.toISOString().slice(0,10); }
 function formatarPedido(texto) { return String(texto || "-").replace(/,/g,"<br>"); }
-function classeStatus(status) { return {"Pendente":"status-pendente","Em separação":"status-separacao","Saiu para entrega":"status-entrega","Concluído":"status-concluido","Cancelado":"status-cancelado"}[status] || "status-pendente"; }
+
+function classeStatus(status) {
+
+    const statusNormalizado = String(status || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+
+    if (statusNormalizado.includes("pendente")) {
+        return "status-pendente";
+    }
+
+    if (statusNormalizado.includes("separacao")) {
+        return "status-separacao";
+    }
+
+    if (statusNormalizado.includes("saiu")) {
+        return "status-entrega";
+    }
+
+    if (statusNormalizado.includes("concluido")) {
+        return "status-concluido";
+    }
+
+    if (statusNormalizado.includes("cancelado")) {
+        return "status-cancelado";
+    }
+
+    return "status-pendente";
+}
+
 function avisarClienteWhatsApp(nome, telefone) { const tel=String(telefone||"").replace(/\D/g,""); if(!tel) return alert("Telefone inválido."); const msg=encodeURIComponent(`Olá, ${nome}! Seu pedido do Mercadinho Ponto Certo saiu para entrega.`); window.open(`https://wa.me/55${tel}?text=${msg}`,"_blank"); }
 
 function renderizarPedidosMobile(pedidos = []) {
@@ -488,4 +563,129 @@ function formatarValorPedido(valor) {
     }
 
     return `R$ ${numero.toFixed(2)}`;
+}
+
+function statusPermiteAvisarCliente(status) {
+
+    const statusNormalizado = String(status || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+
+    return statusNormalizado.includes("saiu");
+}
+
+async function carregarPedidosMantendoFiltros(
+    filtroMesSalvo = "",
+    filtroDiaSalvo = "",
+    filtroStatusSalvo = "Todos"
+) {
+
+    try {
+
+        const resposta = await fetch(`${API_URL}?t=${Date.now()}`);
+        const dados = await resposta.json();
+
+        if (Array.isArray(dados)) {
+
+            pedidos = dados.filter(item => {
+                return item.tipo === "pedido" || item.pedido || item.telefone;
+            });
+
+            produtos = dados.filter(item => {
+                return item.nome && item.preco && item.estoque !== undefined && !item.pedido;
+            });
+
+        } else {
+
+            pedidos = dados.pedidos || [];
+            produtos = dados.produtos || [];
+        }
+
+        const campoMes = document.getElementById("filtroMes");
+        const campoDia = document.getElementById("filtroDia");
+        const campoStatus = document.getElementById("filtroStatus");
+
+        if (campoMes) {
+            campoMes.value = filtroMesSalvo;
+        }
+
+        if (campoDia) {
+            campoDia.value = filtroDiaSalvo;
+        }
+
+        if (campoStatus) {
+            campoStatus.value = filtroStatusSalvo;
+        }
+
+        let pedidosFiltrados = [...pedidos];
+
+        if (filtroMesSalvo) {
+
+            pedidosFiltrados = pedidosFiltrados.filter(pedido => {
+
+                const dataPedido = converterDataPedido(pedido.data);
+
+                const ano = dataPedido.getFullYear();
+                const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
+
+                const anoMesPedido = `${ano}-${mes}`;
+
+                return anoMesPedido === filtroMesSalvo;
+            });
+        }
+
+        if (filtroDiaSalvo) {
+
+            pedidosFiltrados = pedidosFiltrados.filter(pedido => {
+
+                const dataPedido = converterDataPedido(pedido.data);
+
+                const ano = dataPedido.getFullYear();
+                const mes = String(dataPedido.getMonth() + 1).padStart(2, "0");
+                const dia = String(dataPedido.getDate()).padStart(2, "0");
+
+                const dataFormatada = `${ano}-${mes}-${dia}`;
+
+                return dataFormatada === filtroDiaSalvo;
+            });
+        }
+
+        if (filtroStatusSalvo && filtroStatusSalvo !== "Todos") {
+
+            pedidosFiltrados = pedidosFiltrados.filter(pedido => {
+                return pedido.status === filtroStatusSalvo;
+            });
+        }
+
+        renderizarPedidos(pedidosFiltrados);
+        atualizarDashboard(pedidosFiltrados);
+
+        if (typeof atualizarProdutosMaisVendidos === "function") {
+            atualizarProdutosMaisVendidos(pedidosFiltrados);
+        }
+
+        if (typeof atualizarAlertasEstoque === "function") {
+            atualizarAlertasEstoque();
+        }
+
+        if (typeof atualizarEstoqueBaixo === "function") {
+            atualizarEstoqueBaixo();
+        }
+
+        if (typeof renderizarTabelaProdutos === "function") {
+            renderizarTabelaProdutos(produtos);
+        }
+
+    } catch (erro) {
+
+        console.error("Erro ao carregar pedidos mantendo filtros:", erro);
+
+        alert("O status foi salvo, mas ocorreu um erro ao reaplicar os filtros. Clique novamente em Pedidos de Hoje.");
+
+    } finally {
+
+        esconderCarregamentoAdmin();
+    }
 }

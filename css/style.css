@@ -706,23 +706,39 @@ th {
 }
 
 .status-pendente {
-    background-color: #f4b400;
+    background: #ffc107 !important;
+    color: white !important;
 }
 
 .status-separacao {
-    background-color: #0047b3;
+    background: #0047b3 !important;
+    color: white !important;
 }
 
 .status-entrega {
-    background-color: #6f42c1;
+    background: #6f42c1 !important;
+    color: white !important;
 }
 
 .status-concluido {
-    background-color: #198754;
+    background: #198754 !important;
+    color: white !important;
 }
 
 .status-cancelado {
-    background-color: #dc3545;
+    background: #dc3545 !important;
+    color: white !important;
+}
+
+.btn-avisar-cliente,
+.btn-whatsapp-card {
+    background: #198754 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
 }
 
 
