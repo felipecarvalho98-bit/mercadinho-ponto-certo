@@ -185,7 +185,7 @@ function renderizarPedidos(listaPedidos = pedidos) {
 
         tbody.innerHTML += `
             <tr>
-                <td>${pedido.data || "-"}</td>
+                <td>${formatarDataHora(pedido.data)}</td>
                 <td>${pedido.nome || "-"}</td>
                 <td>${pedido.telefone || "-"}</td>
                 <td>${pedido.endereco || "-"}</td>
